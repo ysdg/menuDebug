@@ -2,3 +2,6 @@ code/
 # .gitignore
 data/sqlCode/pgAdmin 4_files/
 data/sqlCode/pgAdmin 4.html
+.vscode/
+.gitignore
+menuDebug.code-workspace
