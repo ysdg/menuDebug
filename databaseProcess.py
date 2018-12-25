@@ -7,6 +7,33 @@ time = datetime.now()
 database    = "test"
 user        = "yuanquan"
 password    = "yuanquan"
+dataType    =   """
+                time        timestamp   NOT NULL PRIMARY KEY,
+                header      int         NOT NULL, 
+                sysStatus   int         NOT NULL,
+                fyValue     int         NOT NULL,
+                fyAdStand   int         NOT NULL,
+                fyDistance  int         NOT NULL,
+                fyFlag      int         NOT NULL,
+                curTemp     int         NOT NULL,
+                jumpTemp    int         NOT NULL,
+                targetTemp  int         NOT NULL,
+                motoData    int         NOT NULL,
+                heatData    int         NOT NULL,
+                motoCur     int         NOT NULL,
+                remainTime  int         NOT NULL,
+                workedTime  int         NOT NULL
+                """
+dataTypeName    = ','.join([(i.split())[0] for i in dataType.split(',') if i.split()!=[]])
+
+def databaseOpen(database, user, password):
+    dbConnect   = psycopg2.connect(database=database, user=user, password=password)
+    print("Opened database", database, "successfully")
+    return dbConnect
+def databaseClose(deConnect):
+    dbConnect.close()
+    print("Closed database connect:", dbConnect.dsn, ",successfully")
+    return 
 
 def dbTableInfoInput():
     print("Please input menu:")
@@ -17,35 +44,26 @@ def dbTableInfoInput():
     str = str+'_'+input()+'ml'+'_'+datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
     return str
 
-
-def dbTableCreate(database, user, password):
-    dbConnect   = psycopg2.connect(database=database, user=user, password=password)
-    print("Opened database", database, "successfully")
-    curConn     = dbConnect.cursor()
-    data        =   """
-                    id  bigint  NOT NULL,
-                    time timestamp NOT NULL, 
-                    header int NOT NULL,
-                    fy int NOT NULL
-                    """
-    dbName = dbTableInfoInput()
-    sql     = "CREATE TABLE T%s (%s)"%(dbName, data)+';'
+def dbTableCreate(deConnect, dataType):
+    curConn     = dbConnect.cursor()    
+    tableName   = 'T'+dbTableInfoInput()
+    sql         = "CREATE TABLE %s (%s)"%(tableName, dataType)+';'
     curConn.execute(sql)
     dbConnect.commit()
     curConn.close()
-    dbConnect.close()
-    return dbName
+    return tableName
 
-def dbDataWrite(dbConnect, dat):
-    curConn     = dbConnect.cursor()
-    curConn.execute("""
-                    ALTER TABLE %s 
-                    """)
+def dbDataWrite(dbConnect, tableName, dat):
+    sql         = "INSERT INTO %s(%s) values(%s)"%(tableName, dataTypeName, 'LOCALTIMESTAMP,'+str(dat)[1:-1])+';'
+    curConn.execute(sql)
     dbConnect.commit()
-    curConn.close()
-    dbConnect.close()
     return
 
-# dbTableCreate()
-# print(dbTableInfoInput())
-dbTableCreate(database, user, password)
+dbConnect   = databaseOpen(database, user, password)
+tableName   = dbTableCreate(dbConnect, dataType)
+curConn     = dbConnect.cursor()
+data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+dbDataWrite(dbConnect, tableName, data)
+
+curConn.close()
+databaseClose(dbConnect)
