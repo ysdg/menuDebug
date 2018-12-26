@@ -8,7 +8,7 @@ database    = "test"
 user        = "yuanquan"
 password    = "yuanquan"
 dataType    =   """
-                time        timestamp   NOT NULL PRIMARY KEY,
+                time        timestamp   PRIMARY KEY,
                 header      int         NOT NULL, 
                 sysStatus   int         NOT NULL,
                 fyValue     int         NOT NULL,
@@ -22,15 +22,16 @@ dataType    =   """
                 heatData    int         NOT NULL,
                 motoCur     int         NOT NULL,
                 remainTime  int         NOT NULL,
-                workedTime  int         NOT NULL
+                workedTime  int         NOT NULL,
+                endLine     int         NOT NULL
                 """
-dataTypeName    = ','.join([(i.split())[0] for i in dataType.split(',') if i.split()!=[]])
+dataTypeName    = ','.join([i.split()[0] for i in dataType.split(',') if i.split()!=[]])
 
 def databaseOpen(database, user, password):
     dbConnect   = psycopg2.connect(database=database, user=user, password=password)
     print("Opened database", database, "successfully")
     return dbConnect
-def databaseClose(deConnect):
+def databaseClose(dbConnect):
     dbConnect.close()
     print("Closed database connect:", dbConnect.dsn, ",successfully")
     return 
@@ -44,7 +45,7 @@ def dbTableInfoInput():
     str = str+'_'+input()+'ml'+'_'+datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
     return str
 
-def dbTableCreate(deConnect, dataType):
+def dbTableCreate(dbConnect, dataType):
     curConn     = dbConnect.cursor()    
     tableName   = 'T'+dbTableInfoInput()
     sql         = "CREATE TABLE %s (%s)"%(tableName, dataType)+';'
@@ -53,17 +54,8 @@ def dbTableCreate(deConnect, dataType):
     curConn.close()
     return tableName
 
-def dbDataWrite(dbConnect, tableName, dat):
-    sql         = "INSERT INTO %s(%s) values(%s)"%(tableName, dataTypeName, 'LOCALTIMESTAMP,'+str(dat)[1:-1])+';'
+def dbDataWrite(dbConnect, curConn, tableName, dat): 
+    sql     = "INSERT INTO %s(%s) values(%s)"%(tableName, dataTypeName, 'LOCALTIMESTAMP,'+str(dat)[1:-1]) +';'
     curConn.execute(sql)
     dbConnect.commit()
-    return
-
-dbConnect   = databaseOpen(database, user, password)
-tableName   = dbTableCreate(dbConnect, dataType)
-curConn     = dbConnect.cursor()
-data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
-dbDataWrite(dbConnect, tableName, data)
-
-curConn.close()
-databaseClose(dbConnect)
+    return 
