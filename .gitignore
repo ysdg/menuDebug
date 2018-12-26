@@ -3,5 +3,5 @@ code/
 data/sqlCode/pgAdmin 4_files/
 data/sqlCode/pgAdmin 4.html
 .vscode/
-.gitignore
 menuDebug.code-workspace
+__pycache__/databaseProcess.cpython-37.pyc
