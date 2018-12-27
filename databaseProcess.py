@@ -59,3 +59,19 @@ def dbDataWrite(dbConnect, curConn, tableName, dat):
     curConn.execute(sql)
     dbConnect.commit()
     return 
+
+def sqlDebug():
+    dbConnect   = databaseOpen(database, user, password)
+    curConn     = dbConnect.cursor()
+
+    sql         = "SELECT * FROM PG_TABLES WHERE SCHEMANAME = 'public' AND TABLEOWNER = 'yuanquan'"
+    curConn.execute(sql)
+    table         = [i[1] for i in curConn.fetchall()]
+    for i in table:
+        sql     = "DROP TABLE %s"%(i)
+        curConn.execute(sql)
+        print(sql)
+
+    dbConnect.commit()
+    curConn.close()
+    databaseClose(dbConnect)

@@ -7,4 +7,4 @@
 -- ALTER TABLE test_try ADD COLUMN endline int;
 -- SELECT LOCALTIMESTAMP;
 -- SELECT *, ROW_NUMBER() OVER(ORDER BY time) FROM test_try;
-SELECT * FROM t1_2g_3ml_2018_12_26_13_05_35
+SELECT * FROM test_try

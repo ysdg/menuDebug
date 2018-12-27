@@ -20,20 +20,25 @@ def uartDataProcess(ser):
                 data[-1]  ]
     return data
 
-ser = serialSerial(serPort, serPortBold, timeout=timeOut)
+def uartDbWrite(ser, dbConnect, tableName):
+    curConn = dbConnect.cursor()
+    data    = uartDataProcess(ser)
+    while(data != []):
+        if data[0]==UartRxLineHead and data[-1]==UartRxLineEnd and len(data)==len(dataTypeName.split(','))-1: 
+            dbDataWrite(dbConnect, curConn, tableName, data)
+            print("Write db successfully:", data)
+        data = uartDataProcess(ser)
+    curConn.close()
 
-dbConnect   = databaseOpen(database, user, password)
-tableName   = dbTableCreate(dbConnect, dataType)
-curConn     = dbConnect.cursor()
+def main():
+    try: 
+        ser         = serialSerial(serPort, serPortBold, timeout=timeOut)
+        dbConnect   = databaseOpen(database, user, password)
+        try:
+            while 1: uartDbWrite(ser, dbConnect, dbTableCreate(dbConnect, dataType))
+        except  KeyboardInterrupt: pass
+    except:
+        databaseClose(dbConnect)
+        ser.close()
 
-data = uartDataProcess(ser)
-while(data != []):
-    if data[0]==UartRxLineHead and data[-1]==UartRxLineEnd and len(data)==len(dataTypeName.split(','))-1: 
-        dbDataWrite(dbConnect, curConn, tableName, data)
-        print("Write db successfully", data)
-    data = uartDataProcess(ser)
-
-curConn.close()
-databaseClose(dbConnect)
-
-ser.close()
+main()
