@@ -1,6 +1,6 @@
 from serial import Serial as serialSerial
 import serial.tools.list_ports
-from databaseProcess import *
+from sqlite3DbProcess import *
 
 serPort         = "COM5"
 serPortBold     = 9600
@@ -33,12 +33,15 @@ def uartDbWrite(ser, dbConnect, tableName):
 def main():
     try: 
         ser         = serialSerial(serPort, serPortBold, timeout=timeOut)
-        dbConnect   = databaseOpen(database, user, password)
-        try:
+        dbConnect   = databaseOpen(database)
+        try: 
             while 1: uartDbWrite(ser, dbConnect, dbTableCreate(dbConnect, dataType))
         except  KeyboardInterrupt: pass
     except:
-        databaseClose(dbConnect)
-        ser.close()
+        try: ser.close()
+        except: 
+            try: databaseClose(dbConnect)
+            except: pass
+
 
 main()
