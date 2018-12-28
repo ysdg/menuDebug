@@ -3,7 +3,7 @@ import serial.tools.list_ports
 from databaseProcess import *
 
 # must be "postgre" or "sqlite3"
-dbType          = "postgre"
+dbType          = "sqlite3"
 serPort         = "COM5"
 serPortBold     = 9600
 serSize         = len(dataTypeName.split(','))+4
@@ -22,28 +22,24 @@ def uartDataProcess(ser):
                 data[-1]  ]
     return data
 
-def uartDbWrite(ser, dbConnect, tableName):
+def uartDbWrite(ser, dbConnect, tableName, dbType):
     curConn = dbConnect.cursor()
     data    = uartDataProcess(ser)
     while(data != []):
         if data[0]==UartRxLineHead and data[-1]==UartRxLineEnd and len(data)==len(dataTypeName.split(','))-1: 
-            dbDataWrite(dbConnect, curConn, tableName, data)
-            print("Write db successfully:", data)
+            dbDataWrite(dbConnect, curConn, tableName, data, dbType)
+            print("Write", dbType, "successfully:", data)
         data = uartDataProcess(ser)
     curConn.close()
 
 def main():
+    ser         = serialSerial(serPort, serPortBold, timeout=timeOut)
+    dbConnect   = databaseOpen(database, user, password, dbType)
     try: 
-        ser         = serialSerial(serPort, serPortBold, timeout=timeOut)
-        dbConnect   = databaseOpen(database, user, password, dbType)
-        try: 
-            while 1: uartDbWrite(ser, dbConnect, dbTableCreate(dbConnect, dataType))
-        except  KeyboardInterrupt: pass
-    except:
-        try: ser.close()
-        except: 
-            try: databaseClose(dbConnect, dbType)
-            except: pass
-
+        while 1: 
+            uartDbWrite(ser, dbConnect, dbTableCreate(dbConnect, dataType), dbType)
+    except  KeyboardInterrupt: pass
+    databaseClose(dbConnect, dbType)
+    ser.close()
 
 main()

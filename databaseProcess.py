@@ -10,8 +10,8 @@ databasePath= "E:\\工艺调试\\sqlite3\\database\\"
 database    = "test"
 user        = "yuanquan"
 password    = "yuanquan"
-dataType    =   """
-                time        timestamp   PRIMARY KEY,
+dataType    =   """         
+                time        timestamp   NOT NULL,
                 header      int         NOT NULL, 
                 sysStatus   int         NOT NULL,
                 fyValue     int         NOT NULL,
@@ -26,14 +26,15 @@ dataType    =   """
                 motoCur     int         NOT NULL,
                 remainTime  int         NOT NULL,
                 workedTime  int         NOT NULL,
-                endLine     int         NOT NULL
+                endLine     int         NOT NULL,
+                id          integer     PRIMARY KEY AUTOINCREMENT
                 """
-dataTypeName    = ','.join([i.split()[0] for i in dataType.split(',') if i.split()!=[]])
+dataTypeName    = ','.join([i.split()[0] for i in dataType.split(',') if i.split()!=[] and i.split()[0]!='id'])
 
 def databaseOpen(database, user, password, dbType):
     if dbType=="postgre": dbConnect = psycopg2.connect(database=database, user=user, password=password)
     else : dbConnect = sqlite3.connect(databasePath+database)
-    print("Opened database", database, "successfully")
+    print("Opened ",dbType, database, "successfully")
     return dbConnect
 def databaseClose(dbConnect, dbType):
     dbConnect.close()
@@ -59,8 +60,10 @@ def dbTableCreate(dbConnect, dataType):
     curConn.close()
     return tableName
 
-def dbDataWrite(dbConnect, curConn, tableName, dat): 
-    sql     = "INSERT INTO %s(%s) values(%s)"%(tableName, dataTypeName, 'LOCALTIMESTAMP,'+str(dat)[1:-1]) +';'
+def dbDataWrite(dbConnect, curConn, tableName, dat, dbType="postgre"):
+    if dbType=="postgre": time = 'LOCALTIMESTAMP,'
+    else: time = 'CURRENT_TIMESTAMP,'
+    sql     = "INSERT INTO %s(%s) values(%s)"%(tableName, dataTypeName, time+str(dat)[1:-1]) +';'
     curConn.execute(sql)
     dbConnect.commit()
     return 
@@ -68,10 +71,12 @@ def dbDataWrite(dbConnect, curConn, tableName, dat):
 def sqlDebug(dbType):
     dbConnect   = databaseOpen(database, user, password, dbType)
     curConn     = dbConnect.cursor()
-
-    sql         = "SELECT * FROM table_try"
+    # tableName   = dbTableCreate(dbConnect, dataType)
+    # data = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+    # dbDataWrite(dbConnect, curConn, tableName, data, dbType)
+    sql         = "SELECT * FROM sqlite_master WHERE type='table' ORDER BY name"
     curConn.execute(sql)
-    print(curConn.fetchall())
+    print([a[1] for a in curConn.fetchall()])
     # print([a[1] for a in curConn.fetchall()])
 
     dbConnect.commit()
