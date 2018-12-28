@@ -1,7 +1,9 @@
 from serial import Serial as serialSerial
 import serial.tools.list_ports
-from sqlite3DbProcess import *
+from databaseProcess import *
 
+# must be "postgre" or "sqlite3"
+dbType          = "postgre"
 serPort         = "COM5"
 serPortBold     = 9600
 serSize         = len(dataTypeName.split(','))+4
@@ -33,14 +35,14 @@ def uartDbWrite(ser, dbConnect, tableName):
 def main():
     try: 
         ser         = serialSerial(serPort, serPortBold, timeout=timeOut)
-        dbConnect   = databaseOpen(database)
+        dbConnect   = databaseOpen(database, user, password, dbType)
         try: 
             while 1: uartDbWrite(ser, dbConnect, dbTableCreate(dbConnect, dataType))
         except  KeyboardInterrupt: pass
     except:
         try: ser.close()
         except: 
-            try: databaseClose(dbConnect)
+            try: databaseClose(dbConnect, dbType)
             except: pass
 
 
