@@ -6,8 +6,10 @@ from datetime import datetime
 time = datetime.now()
 
 # only for sqlite3 database
-databasePath= "E:\\工艺调试\\sqlite3\\database\\"
-database    = "test"
+databasePath= "./sqlite3/database/"
+# "default" or "input", default: soyMilk, 140g, 1400ml
+menuMsg     = "default"
+database    = "menuDebugData"
 user        = "yuanquan"
 password    = "yuanquan"
 dataType    =   """         
@@ -42,21 +44,26 @@ def databaseClose(dbConnect, dbType):
     else : print("Closed",dbType,"database connect successfully")
     return 
 
-def dbTableInfoInput():
-    print("Please input menu:")
-    str = input()
-    print("Please materials(g):")
-    str = str+'_'+input()+'g'
-    print("Please water level(ml):")
-    str = str+'_'+input()+'ml'+'_'+datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
+def dbTableInfoInput(menuMsg="input"):
+    if menuMsg=="input": str = input("Please input menu:")
+    else: str = "soyMilk"
+    if menuMsg=="input": str = input("Please materials(g):")
+    else: str = str+'_'+'140'+'g'
+    if menuMsg=="input": str = input("Please water level(ml):")
+    else: str = str+'_'+'1400'+'ml'+'_'+datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
     return str
 
-def dbTableCreate(dbConnect, dataType):
+def dbTableCreate(dbConnect, dataType, dbType='sqlite3'):
     curConn     = dbConnect.cursor()    
-    tableName   = 'T'+dbTableInfoInput()
+    if dbType=="postgre": time = 'LOCALTIMESTAMP,'
+    else: time  = 'CURRENT_TIMESTAMP,'
+    tableName   = 'T'+dbTableInfoInput(menuMsg)
     sql         = "CREATE TABLE %s (%s)"%(tableName, dataType)+';'
     curConn.execute(sql)
+    sql = "INSERT INTO tableSet(time,tableName) values(%s)"%(time+"'"+tableName+"'")
+    curConn.execute(sql)
     dbConnect.commit()
+    print('Create table:',tableName,'successfully')
     curConn.close()
     return tableName
 
@@ -68,15 +75,44 @@ def dbDataWrite(dbConnect, curConn, tableName, dat, dbType="postgre"):
     dbConnect.commit()
     return 
 
+def dbTableDelete(database, tableToDelete, dbType='sqlite3'):
+    dbConnect   = sqlite3.connect(databasePath+database)
+    curConn     = dbConnect.cursor()
+    for tableName in tableToDelete:
+        curConn.execute("DROP TABLE %s"%(tableName))
+        curConn.execute("DELETE * FROM tableSet WHERE tableName=%s"%("'"+tableName+"'"))
+        print("Drop table:", tableName, "successfully")
+    dbConnect.commit()
+    curConn.close()
+    databaseClose(dbConnect, dbType)
+
 def sqlDebug(dbType):
     dbConnect   = databaseOpen(database, user, password, dbType)
     curConn     = dbConnect.cursor()
     # tableName   = dbTableCreate(dbConnect, dataType)
     # data = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
     # dbDataWrite(dbConnect, curConn, tableName, data, dbType)
-    sql         = "SELECT * FROM sqlite_master WHERE type='table' ORDER BY name"
+    # sql         = """CREATE TABLE tableSet( id          integer     PRIMARY KEY AUTOINCREMENT,
+    #                                         tableName   text NOT NULL, 
+    #                                         time        timestamp   NOT NULL)"""
+    # sql = "INSERT INTO tableSet(time,tableName) values(%s)"%("CURRENT_TIMESTAMP, 't12_23dad_'")
+    # sql = "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;"
+    # curConn.execute(sql)
+    # tableNames = [a[0] for a in curConn.fetchall()]
+    # print(tableNames)
+    sql = "SELECT tableName FROM tableSet"
     curConn.execute(sql)
-    print([a[1] for a in curConn.fetchall()])
+    tableSetNames = [a[0] for a in curConn.fetchall()]
+    print(tableSetNames)
+    for table in tableSetNames:
+        sql = "SELECT id FROM %s"%table
+        curConn.execute(sql)
+        print(max([a[0] for a in curConn.fetchall()]))
+    # sql = "DELETE FROM tableSet WHERE tableName='TsoyMilk_140g_1400ml_2018_12_29_11_43_17'"
+    # sql = "DROP TABLE TsoyMilk_140g_1400ml_2018_12_29_11_43_17"
+    # curConn.execute(sql)
+    # curConn.execute("DROP TABLE tableSet")
+    # print(tableSetNames)
     # print([a[1] for a in curConn.fetchall()])
 
     dbConnect.commit()

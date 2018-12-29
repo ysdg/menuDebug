@@ -1,13 +1,19 @@
+import psycopg2
 import sqlite3
 
 # absolute time
 from datetime import datetime
 time = datetime.now()
 
-databasePath= "E:\\工艺调试\\sqlite3\\database\\"
-database    = "test"
-dataType    =   """
-                time        timestamp   PRIMARY KEY,
+# only for sqlite3 database
+databasePath= "./sqlite3/database/"
+# "default" or "input", default: soyMilk, 140g, 1400ml
+menuMsg     = "default"
+database    = "menuDebugData"
+user        = "yuanquan"
+password    = "yuanquan"
+dataType    =   """         
+                time        timestamp   NOT NULL,
                 header      int         NOT NULL, 
                 sysStatus   int         NOT NULL,
                 fyValue     int         NOT NULL,
@@ -22,58 +28,95 @@ dataType    =   """
                 motoCur     int         NOT NULL,
                 remainTime  int         NOT NULL,
                 workedTime  int         NOT NULL,
-                endLine     int         NOT NULL
+                endLine     int         NOT NULL,
+                id          integer     PRIMARY KEY AUTOINCREMENT
                 """
-dataTypeName    = ','.join([i.split()[0] for i in dataType.split(',') if i.split()!=[]])
+dataTypeName    = ','.join([i.split()[0] for i in dataType.split(',') if i.split()!=[] and i.split()[0]!='id'])
 
-def databaseOpen(database):
-    dbConnect   = sqlite3.connect(databasePath+database)
-    print("Opened database", database, "successfully")
+def databaseOpen(database, user, password, dbType):
+    if dbType=="postgre": dbConnect = psycopg2.connect(database=database, user=user, password=password)
+    else : dbConnect = sqlite3.connect(databasePath+database)
+    print("Opened ",dbType, database, "successfully")
     return dbConnect
-def databaseClose(dbConnect):
+def databaseClose(dbConnect, dbType):
     dbConnect.close()
-    print("Closed database connect successfully")
+    if dbType=="postgre": print("Closed",dbType,"database connect:", dbConnect.dsn, ",successfully")
+    else : print("Closed",dbType,"database connect successfully")
     return 
 
-def dbTableInfoInput():
-    print("Please input menu:")
-    str = input()
-    print("Please materials(g):")
-    str = str+'_'+input()+'g'
-    print("Please water level(ml):")
-    str = str+'_'+input()+'ml'+'_'+datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
+def dbTableInfoInput(menuMsg="input"):
+    if menuMsg=="input": str = input("Please input menu:")
+    else: str = "soyMilk"
+    if menuMsg=="input": str = input("Please materials(g):")
+    else: str = str+'_'+'140'+'g'
+    if menuMsg=="input": str = input("Please water level(ml):")
+    else: str = str+'_'+'1400'+'ml'+'_'+datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
     return str
 
-def dbTableCreate(dbConnect, dataType):
+def dbTableCreate(dbConnect, dataType, dbType='sqlite3'):
     curConn     = dbConnect.cursor()    
-    tableName   = 'T'+dbTableInfoInput()
+    if dbType=="postgre": time = 'LOCALTIMESTAMP,'
+    else: time  = 'CURRENT_TIMESTAMP,'
+    tableName   = 'T'+dbTableInfoInput(menuMsg)
     sql         = "CREATE TABLE %s (%s)"%(tableName, dataType)+';'
     curConn.execute(sql)
+    sql = "INSERT INTO tableSet(time,tableName) values(%s)"%(time+"'"+tableName+"'")
+    curConn.execute(sql)
     dbConnect.commit()
+    print('Create table:',tableName,'successfully')
     curConn.close()
     return tableName
 
-def dbDataWrite(dbConnect, curConn, tableName, dat): 
-    sql     = "INSERT INTO %s(%s) values(%s)"%(tableName, dataTypeName, 'LOCALTIMESTAMP,'+str(dat)[1:-1]) +';'
+def dbDataWrite(dbConnect, curConn, tableName, dat, dbType="postgre"):
+    if dbType=="postgre": time = 'LOCALTIMESTAMP,'
+    else: time = 'CURRENT_TIMESTAMP,'
+    sql     = "INSERT INTO %s(%s) values(%s)"%(tableName, dataTypeName, time+str(dat)[1:-1]) +';'
     curConn.execute(sql)
     dbConnect.commit()
     return 
 
-def sqlDebug():
-    dbConnect   = databaseOpen(database)
+def dbTableDelete(database, tableToDelete, dbType='sqlite3'):
+    dbConnect   = sqlite3.connect(databasePath+database)
     curConn     = dbConnect.cursor()
-    try:    
-        sql     = "CREATE TABLE table_try (time);"
+    for tableName in tableToDelete:
+        curConn.execute("DROP TABLE %s"%(tableName))
+        curConn.execute("DELETE * FROM tableSet WHERE tableName=%s"%("'"+tableName+"'"))
+        print("Drop table:", tableName, "successfully")
+    dbConnect.commit()
+    curConn.close()
+    databaseClose(dbConnect, dbType)
+
+def sqlDebug(dbType):
+    dbConnect   = databaseOpen(database, user, password, dbType)
+    curConn     = dbConnect.cursor()
+    # tableName   = dbTableCreate(dbConnect, dataType)
+    # data = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+    # dbDataWrite(dbConnect, curConn, tableName, data, dbType)
+    # sql         = """CREATE TABLE tableSet( id          integer     PRIMARY KEY AUTOINCREMENT,
+    #                                         tableName   text NOT NULL, 
+    #                                         time        timestamp   NOT NULL)"""
+    # sql = "INSERT INTO tableSet(time,tableName) values(%s)"%("CURRENT_TIMESTAMP, 't12_23dad_'")
+    # sql = "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;"
+    # curConn.execute(sql)
+    # tableNames = [a[0] for a in curConn.fetchall()]
+    # print(tableNames)
+    sql = "SELECT tableName FROM tableSet"
+    curConn.execute(sql)
+    tableSetNames = [a[0] for a in curConn.fetchall()]
+    print(tableSetNames)
+    for table in tableSetNames:
+        sql = "SELECT id FROM %s"%table
         curConn.execute(sql)
-    except: pass
-    sql         = "INSERT INTO table_try(time) values(12)"
-    curConn.execute(sql)
-    sql         = "SELECT * FROM table_try"
-    curConn.execute(sql)
-    print(curConn.fetchall())
+        print(max([a[0] for a in curConn.fetchall()]))
+    # sql = "DELETE FROM tableSet WHERE tableName='TsoyMilk_140g_1400ml_2018_12_29_11_43_17'"
+    # sql = "DROP TABLE TsoyMilk_140g_1400ml_2018_12_29_11_43_17"
+    # curConn.execute(sql)
+    # curConn.execute("DROP TABLE tableSet")
+    # print(tableSetNames)
+    # print([a[1] for a in curConn.fetchall()])
 
     dbConnect.commit()
     curConn.close()
-    databaseClose(dbConnect)
+    databaseClose(dbConnect, dbType)
 
-sqlDebug()
+# sqlDebug("sqlite3")

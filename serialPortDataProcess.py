@@ -25,11 +25,18 @@ def uartDataProcess(ser):
 def uartDbWrite(ser, dbConnect, tableName, dbType):
     curConn = dbConnect.cursor()
     data    = uartDataProcess(ser)
+    writeCnt= 0
     while(data != []):
         if data[0]==UartRxLineHead and data[-1]==UartRxLineEnd and len(data)==len(dataTypeName.split(','))-1: 
             dbDataWrite(dbConnect, curConn, tableName, data, dbType)
+            writeCnt = writeCnt + 1
             print("Write", dbType, "successfully:", data)
         data = uartDataProcess(ser)
+    if writeCnt<30: 
+        curConn.execute("DROP TABLE %s"%tableName)
+        curConn.execute("DELETE FROM tableSet WHERE tableName=%s"%("'"+tableName+"'"))
+        print("Drop table:", tableName, "successfully")
+    dbConnect.commit()
     curConn.close()
 
 def main():
