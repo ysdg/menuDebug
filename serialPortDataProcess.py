@@ -1,6 +1,7 @@
 from serial import Serial as serialSerial
 import serial.tools.list_ports
 from databaseProcess import *
+from matPlotFromDb import *
 
 # must be "postgre" or "sqlite3"
 dbType          = "sqlite3"
@@ -34,18 +35,23 @@ def uartDbWrite(ser, dbConnect, tableName, dbType):
         data = uartDataProcess(ser)
     if writeCnt<30: 
         curConn.execute("DROP TABLE %s"%tableName)
-        curConn.execute("DELETE FROM tableSet WHERE tableName=%s"%("'"+tableName+"'"))
         print("Drop table:", tableName, "successfully")
+    else: tableDatPlot(tableName)
     dbConnect.commit()
     curConn.close()
 
 def main():
     ser         = serialSerial(serPort, serPortBold, timeout=timeOut)
     dbConnect   = databaseOpen(database, user, password, dbType)
+    
+    for tableName in tableNames: 
+        if sqlExe("SELECT id FROM %s"%(tableName))==[]: dbTableDelete([tableName])
     try: 
         while 1: 
-            uartDbWrite(ser, dbConnect, dbTableCreate(dbConnect, dataType), dbType)
-    except  KeyboardInterrupt: pass
+            tableName = dbTableCreate(dbConnect, dataType)
+            uartDbWrite(ser, dbConnect, tableName, dbType)
+    except  KeyboardInterrupt:
+        if sqlExe("SELECT id FROM %s"%(tableName))==[]: dbTableDelete([tableName])
     databaseClose(dbConnect, dbType)
     ser.close()
 

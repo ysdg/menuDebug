@@ -31,7 +31,8 @@ dataType    =   """
                 endLine     int         NOT NULL,
                 id          integer     PRIMARY KEY AUTOINCREMENT
                 """
-dataTypeName    = ','.join([i.split()[0] for i in dataType.split(',') if i.split()!=[] and i.split()[0]!='id'])
+dataTypeName    = ','.join([i.split()[0] for i in dataType.split(',') 
+                                if i.split()!=[] and i.split()[0]!='id'])
 
 def databaseOpen(database, user, password, dbType):
     if dbType=="postgre": dbConnect = psycopg2.connect(database=database, user=user, password=password)
@@ -60,8 +61,6 @@ def dbTableCreate(dbConnect, dataType, dbType='sqlite3'):
     tableName   = 'T'+dbTableInfoInput(menuMsg)
     sql         = "CREATE TABLE %s (%s)"%(tableName, dataType)+';'
     curConn.execute(sql)
-    sql = "INSERT INTO tableSet(time,tableName) values(%s)"%(time+"'"+tableName+"'")
-    curConn.execute(sql)
     dbConnect.commit()
     print('Create table:',tableName,'successfully')
     curConn.close()
@@ -75,16 +74,46 @@ def dbDataWrite(dbConnect, curConn, tableName, dat, dbType="postgre"):
     dbConnect.commit()
     return 
 
-def dbTableDelete(database, tableToDelete, dbType='sqlite3'):
-    dbConnect   = sqlite3.connect(databasePath+database)
+def dbTableDelete(tableToDelete, database=database, dbType='sqlite3'):
+    dbConnect   = databaseOpen(database, user, password, dbType)
     curConn     = dbConnect.cursor()
     for tableName in tableToDelete:
-        curConn.execute("DROP TABLE %s"%(tableName))
-        curConn.execute("DELETE * FROM tableSet WHERE tableName=%s"%("'"+tableName+"'"))
-        print("Drop table:", tableName, "successfully")
+        try: 
+            curConn.execute("DROP TABLE %s"%(tableName))
+            print("Drop table:", tableName, "successfully")
+        except:
+            print("Drop table:", tableName, "failly")
     dbConnect.commit()
     curConn.close()
     databaseClose(dbConnect, dbType)
+
+# read data from database
+# clomune = [] means return all and clomune must be a list
+def dbDataRead(tableName, clomune=[], dbType='sqlite3'):
+    dbConnect   = databaseOpen(database, user, password, dbType)
+    curConn     = dbConnect.cursor()
+    data        = []
+    for cloName in clomune:
+        sql = "SELECT %s FROM %s"%(cloName, tableName)
+        curConn.execute(sql)
+        data.append([a[0] for a in curConn.fetchall()])
+    if clomune==[]: 
+        sql = "SELECT * FROM %s"%tableName
+        curConn.execute(sql)
+        data.append([a for a in curConn.fetchall()])
+    dbConnect.commit()
+    curConn.close()
+    databaseClose(dbConnect, dbType)
+    return data
+
+def sqlExe(sql, database=database, user=user, password=password, dbType='sqlite3'):
+    dbConnect = databaseOpen(database, user, password, dbType)
+    curConn   = dbConnect.cursor()
+    curConn.execute(sql)
+    data      = curConn.fetchall()
+    dbConnect.commit()
+    databaseClose(dbConnect, dbType)
+    return data
 
 def sqlDebug(dbType):
     dbConnect   = databaseOpen(database, user, password, dbType)
@@ -92,26 +121,23 @@ def sqlDebug(dbType):
     # tableName   = dbTableCreate(dbConnect, dataType)
     # data = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
     # dbDataWrite(dbConnect, curConn, tableName, data, dbType)
-    # sql         = """CREATE TABLE tableSet( id          integer     PRIMARY KEY AUTOINCREMENT,
-    #                                         tableName   text NOT NULL, 
-    #                                         time        timestamp   NOT NULL)"""
-    # sql = "INSERT INTO tableSet(time,tableName) values(%s)"%("CURRENT_TIMESTAMP, 't12_23dad_'")
     # sql = "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;"
     # curConn.execute(sql)
     # tableNames = [a[0] for a in curConn.fetchall()]
     # print(tableNames)
-    sql = "SELECT tableName FROM tableSet"
+    sql = "SELECT * FROM sqlite_master WHERE type='table' ORDER BY rowid"
     curConn.execute(sql)
-    tableSetNames = [a[0] for a in curConn.fetchall()]
-    print(tableSetNames)
-    for table in tableSetNames:
-        sql = "SELECT id FROM %s"%table
-        curConn.execute(sql)
-        print(max([a[0] for a in curConn.fetchall()]))
-    # sql = "DELETE FROM tableSet WHERE tableName='TsoyMilk_140g_1400ml_2018_12_29_11_43_17'"
+    # print(curConn.fetchall())
+    print([i[1] for i in curConn.fetchall()])
+    # dbConnect.commit()
+    # tableSetNames = [a[0] for a in curConn.fetchall()]
+    # print(tableSetNames)
+    # for table in tableSetNames:
+    #     sql = "SELECT id FROM %s"%table
+    #     curConn.execute(sql)
+    #     print(max([a[0] for a in curConn.fetchall()]))
     # sql = "DROP TABLE TsoyMilk_140g_1400ml_2018_12_29_11_43_17"
-    # curConn.execute(sql)
-    # curConn.execute("DROP TABLE tableSet")
+    
     # print(tableSetNames)
     # print([a[1] for a in curConn.fetchall()])
 
@@ -120,3 +146,5 @@ def sqlDebug(dbType):
     databaseClose(dbConnect, dbType)
 
 # sqlDebug("sqlite3")
+# print(sqlExe("SELECT name FROM sqlite_master      \
+#                 WHERE type='table' and rowid=(SELECT MAX(rowid) FROM sqlite_master)")[0][0])
