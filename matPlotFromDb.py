@@ -26,6 +26,8 @@ def tableDatPlot(tableName):
     plt.plot(data[dataDict['workedTime']], data[dataDict['fyAdStand']], label='fyAdStand')
     plt.plot(data[dataDict['workedTime']], data[dataDict['fyDistance']], label='fyDistance')
     plt.plot(data[dataDict['workedTime']], [i*100 for i in data[dataDict['fyFlag']]], label='fyFlag*100')
+    xydata = sqlExe("SELECT workedTime, fyValue FROM %s WHERE fyValue=(SELECT MIN(fyValue) FROM %s)"%(tableName, tableName))[0]
+    plt.annotate(str(xydata), xy=xydata)
     plt.title('%s'%tableName)
     plt.xlabel('worked time/s')
     plt.ylabel('AD Value')
@@ -36,6 +38,8 @@ def tableDatPlot(tableName):
     plt.plot(data[dataDict['workedTime']], data[dataDict['curTemp']], label='curTemp')
     plt.plot(data[dataDict['workedTime']], data[dataDict['jumpTemp']], label='jumpTemp')
     plt.plot(data[dataDict['workedTime']], data[dataDict['targetTemp']], label='targetTemp')
+    xydata = sqlExe("SELECT workedTime, curTemp FROM %s WHERE curTemp=(SELECT MAX(curTemp) FROM %s)"%(tableName, tableName))[0]
+    plt.annotate(str(xydata), xy=xydata)
     plt.title('%s'%tableName)
     plt.xlabel('worked time/s')
     plt.ylabel(u'Temp/℃')
@@ -52,9 +56,9 @@ def tableDatPlot(tableName):
     plt.legend()
     plt.savefig(path+'/'+tableName+'_Data', dpi=500)
 
-print(tableNames)
-for tableName in tableNames:
-    tableDatPlot(tableName)
+# print(tableNames)
+# for tableName in tableNames:
+#     tableDatPlot(tableName)
 
 # plt.show()
 # print(sqlExe("SELECT id FROM %s"%(tableNames[-1])))
