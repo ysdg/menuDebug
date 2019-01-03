@@ -1,5 +1,5 @@
-import psycopg2
-import sqlite3
+from psycopg2 import connect as psycopg2Connect
+from sqlite3 import connect as sqlite3Connect
 
 # absolute time
 from datetime import datetime
@@ -35,8 +35,8 @@ dataTypeName    = ','.join([i.split()[0] for i in dataType.split(',')
                                 if i.split()!=[] and i.split()[0]!='id'])
 
 def databaseOpen(database, user, password, dbType):
-    if dbType=="postgre": dbConnect = psycopg2.connect(database=database, user=user, password=password)
-    else : dbConnect = sqlite3.connect(databasePath+database)
+    if dbType=="postgre": dbConnect = psycopg2Connect(database=database, user=user, password=password)
+    else : dbConnect = sqlite3Connect(databasePath+database)
     print("Opened ",dbType, database, "successfully")
     return dbConnect
 def databaseClose(dbConnect, dbType):

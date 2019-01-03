@@ -1,5 +1,4 @@
 from serial import Serial as serialSerial
-import serial.tools.list_ports
 from databaseProcess import *
 from matPlotFromDb import *
 

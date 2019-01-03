@@ -1,4 +1,3 @@
-import numpy as np
 import matplotlib.pyplot as plt
 from databaseProcess import *
 from os import mkdir as pathMkdir
@@ -53,8 +52,9 @@ def tableDatPlot(tableName):
     plt.legend()
     plt.savefig(path+'/'+tableName+'_Data', dpi=500)
 
-# for tableName in tableNames:
-#     tableDatPlot(tableName)
+print(tableNames)
+for tableName in tableNames:
+    tableDatPlot(tableName)
 
 # plt.show()
 # print(sqlExe("SELECT id FROM %s"%(tableNames[-1])))
