@@ -6,9 +6,9 @@ from datetime import datetime
 time = datetime.now()
 
 # only for sqlite3 database
-databasePath= "./sqlite3/database/"
+databasePath= "../sqlite3/database/"
 # "default" or "input", default: soyMilk, 140g, 1400ml
-menuMsg     = "default"
+menuMsg     = "input"
 database    = "menuDebugData"
 user        = "yuanquan"
 password    = "yuanquan"

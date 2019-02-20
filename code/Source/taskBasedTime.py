@@ -8,8 +8,9 @@ def print_some_times():
     print(time.time())
     try:
         while 1:
-            s.enter(0.1, 1, print_time)
+            s.enter(2, 1, print_time)
             s.run()
+            print(time.time())
     except KeyboardInterrupt:
         print(time.time())
 

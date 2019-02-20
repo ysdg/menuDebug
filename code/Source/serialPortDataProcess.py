@@ -22,12 +22,14 @@ def uartDataProcess(ser):
                 data[-1]  ]
     return data
 
-def uartDbWrite(ser, dbConnect, tableName, dbType):
+def uartDbWrite(ser, dbConnect, dbType):
     curConn = dbConnect.cursor()
     data    = uartDataProcess(ser)
     writeCnt= 0
     while(data != []):
         if data[0]==UartRxLineHead and data[-1]==UartRxLineEnd and len(data)==len(dataTypeName.split(','))-1: 
+            if writeCnt==0:
+                tableName = dbTableCreate(dbConnect, dataType)
             dbDataWrite(dbConnect, curConn, tableName, data, dbType)
             writeCnt = writeCnt + 1
             print("Write", dbType, "successfully:", data)
@@ -38,6 +40,7 @@ def uartDbWrite(ser, dbConnect, tableName, dbType):
     else: tableDatPlot(tableName)
     dbConnect.commit()
     curConn.close()
+    return tableName
 
 def main():
     ser         = serialSerial(serPort, serPortBold, timeout=timeOut)
@@ -47,8 +50,7 @@ def main():
         if sqlExe("SELECT id FROM %s"%(tableName))==[]: dbTableDelete([tableName])
     try: 
         while 1: 
-            tableName = dbTableCreate(dbConnect, dataType)
-            uartDbWrite(ser, dbConnect, tableName, dbType)
+            tableName = uartDbWrite(ser, dbConnect, dbType)
     except  KeyboardInterrupt:
         if sqlExe("SELECT id FROM %s"%(tableName))==[]: dbTableDelete([tableName])
     databaseClose(dbConnect, dbType)
