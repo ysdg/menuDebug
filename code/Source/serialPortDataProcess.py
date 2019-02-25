@@ -59,4 +59,4 @@ def main():
     databaseClose(dbConnect, dbType)
     ser.close()
 
-main()
+main()  

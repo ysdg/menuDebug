@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from databaseProcess import *
 from os import mkdir as pathMkdir
 from os.path import exists as pathExists
-imagePath = "sqlite3/image/"
+imagePath = "../sqlite3/image/"
 dataDict = {'time':0, 'header':1, 'sysStatus':2, 'fyValue':3, 'fyAdStand':4, 
             'fyDistance':5, 'fyFlag':6, 'curTemp':7, 'jumpTemp':8, 'targetTemp':9, 
             'motoData':10, 'heatData':11, 'motoCur':12, 'remainTime':13, 
