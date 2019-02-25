@@ -34,13 +34,15 @@ def uartDbWrite(ser, dbConnect, dbType):
             writeCnt = writeCnt + 1
             print("Write", dbType, "successfully:", data)
         data = uartDataProcess(ser)
-    if writeCnt<30: 
-        curConn.execute("DROP TABLE %s"%tableName)
-        print("Drop table:", tableName, "successfully")
-    else: tableDatPlot(tableName)
+    if writeCnt > 0:
+        if writeCnt < 30:
+            curConn.execute("DROP TABLE %s"%tableName)
+            print("Drop table:", tableName, "successfully")
+        else: tableDatPlot(tableName)
     dbConnect.commit()
     curConn.close()
-    return tableName
+    if writeCnt > 0: return tableName
+    else: return 
 
 def main():
     ser         = serialSerial(serPort, serPortBold, timeout=timeOut)
@@ -52,7 +54,8 @@ def main():
         while 1: 
             tableName = uartDbWrite(ser, dbConnect, dbType)
     except  KeyboardInterrupt:
-        if sqlExe("SELECT id FROM %s"%(tableName))==[]: dbTableDelete([tableName])
+        if tableName!=None:
+            if sqlExe("SELECT id FROM %s"%(tableName))==[]: dbTableDelete([tableName])
     databaseClose(dbConnect, dbType)
     ser.close()
 

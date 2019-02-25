@@ -48,9 +48,9 @@ def databaseClose(dbConnect, dbType):
 def dbTableInfoInput(menuMsg="input"):
     if menuMsg=="input": str = input("Please input menu:")
     else: str = "soyMilk"
-    if menuMsg=="input": str = input("Please materials(g):")
+    if menuMsg=="input": str = str +'_'+input("Please materials(g):")
     else: str = str+'_'+'140'+'g'
-    if menuMsg=="input": str = input("Please water level(ml):")
+    if menuMsg=="input": str = str +'_'+input("Please water level(ml):")
     else: str = str+'_'+'1400'+'ml'+'_'+datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
     return str
 
