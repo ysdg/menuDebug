@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 import matplotlib.pyplot as plt
 from databaseProcess import *
 from os import mkdir as pathMkdir
@@ -55,6 +56,30 @@ def tableDatPlot(tableName):
     plt.ylabel(u'rank')
     plt.legend()
     plt.savefig(path+'/'+tableName+'_Data', dpi=500)
+
+def tableDatPlotForCol(tableNames, col='motoCur'):
+    dirName = "matrial_motoLx"
+    path = imagePath+dirName
+    if not pathExists(path): pathMkdir(path)
+    plt.figure(figsize=[6.4*2, 4.8*2])
+    for tableName in tableNames:
+        data = dbDataRead(tableName, list(dataDict.keys()))
+        if tableName.split('_')[2]=='700': myLable = '1400'
+        else: myLable = '700'
+        plt.plot(data[dataDict['workedTime']], data[dataDict[col]], label=myLable)
+        motoLx = tableName.split('_')[0][1:]
+        matrial = tableName.split('_')[1]
+    title = "%s-%s--700-1400"%(motoLx, matrial)
+
+    plt.title(title)
+    plt.xlabel(u'worked time/s')
+    plt.ylabel(u'motoCur AD value')
+    plt.legend()
+    plt.savefig(path+'/'+title+'_Cur', dpi=500)
+
+dataTableNames = [i[0] for i in sqlExe("SELECT name FROM sqlite_master") if i[0]!='sqlite_sequence']
+# print(dataTableProcess(dataTableNames)[:10])
+tableDatPlotForCol(dataTableProcess(dataTableNames)[:10])
 
 # print(tableNames)
 # for tableName in tableNames:

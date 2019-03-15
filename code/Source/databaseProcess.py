@@ -1,6 +1,8 @@
 from psycopg2 import connect as psycopg2Connect
 from sqlite3 import connect as sqlite3Connect
 
+import numpy as np
+
 # absolute time
 from datetime import datetime
 time = datetime.now()
@@ -117,6 +119,28 @@ def sqlExe(sql, database=database, user=user, password=password, dbType='sqlite3
     databaseClose(dbConnect, dbType)
     return data
 
+def dataTableProcess(tableNames):
+    tableNameReturn = []
+    for tableName in tableNames:
+        tableNameSeq = tableName.split('_')
+        if  len(tableNameSeq)>5     and \
+            tableNameSeq[3]=='2019' and \
+            tableNameSeq[4]=='02'   and \
+            tableNameSeq[5]=='25':
+            if  (tableNameSeq[0]=='TmotoL10' and tableNameSeq[1]=='soyMilk'):
+                # (tableNameSeq[0]=='TmotoL11' and tableNameSeq[1]=='soyMilk'  and tableNameSeq[2]=='700') or \
+                # (tableNameSeq[0]=='TmotoL11' and tableNameSeq[1]=='Juice'    and tableNameSeq[2]=='1400') :
+                tableNameReturn.append(tableName)
+    for i in range(len(tableNameReturn)-2):
+        if len(tableNameReturn)<3 or i>=len(tableNameReturn): break
+        before = tableNameReturn[i].split('_')
+        after = tableNameReturn[i+1].split('_')
+        if before[0]==after[0] and before[1]==after[1] and before[2]==after[2]:
+            del tableNameReturn[i]
+    # del tableNameReturn[1:4]
+    return tableNameReturn
+        
+
 def sqlDebug(dbType):
     dbConnect   = databaseOpen(database, user, password, dbType)
     curConn     = dbConnect.cursor()
@@ -148,5 +172,10 @@ def sqlDebug(dbType):
     databaseClose(dbConnect, dbType)
 
 # sqlDebug("sqlite3")
+dataTableNames = [i[0] for i in sqlExe("SELECT name FROM sqlite_master") if i[0]!='sqlite_sequence']
+for i in dataTableProcess(dataTableNames):
+    data = dbDataRead(i, ['motoCur'])
+    print(i,'--',np.mean(data))
+# print(dataTableNames)
 # print(sqlExe("SELECT name FROM sqlite_master      \
-#                 WHERE type='table' and rowid=(SELECT MAX(rowid) FROM sqlite_master)")[0][0])
+#                 WHERE type='table' and rowid=(SELECT MAX(rowid) FROM sqlite_master)"))
