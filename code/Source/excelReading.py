@@ -11,9 +11,9 @@ excelAbsPath = os.path.join(os.path.abspath('..'), 'document', menuProcessfileNa
 # read row data from excel by default.
 # data from float to secoud: second = float*240*60*60(1 day for 1)
 def excelDataRead(count=0, rowOrCol='row'):
-    data = xlrd.open_workbook(excelAbsPath)
-    table = data.sheet_by_name(dataSheetName)
-    if rowOrCol=='col': return table.col_values(count)
-    else: return table.row_values(count)
+	data = xlrd.open_workbook(excelAbsPath)
+	table = data.sheet_by_name(dataSheetName)
+	if rowOrCol=='col': return table.col_values(count)
+	else: return table.row_values(count)
 
-print(excelDataRead(6)[2]*24*60*60)
+# print(excelDataRead(6)[2]*24*60*60)
