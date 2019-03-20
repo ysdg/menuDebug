@@ -127,7 +127,7 @@ def dataTableProcess(tableNames):
             tableNameSeq[3]=='2019' and \
             tableNameSeq[4]=='02'   and \
             tableNameSeq[5]=='25':
-            if  (tableNameSeq[0]=='TmotoL10' and tableNameSeq[1]=='soyMilk'):
+            if  (tableNameSeq[0]=='TmotoL10' and tableNameSeq[1]=='Juice'):
                 # (tableNameSeq[0]=='TmotoL11' and tableNameSeq[1]=='soyMilk'  and tableNameSeq[2]=='700') or \
                 # (tableNameSeq[0]=='TmotoL11' and tableNameSeq[1]=='Juice'    and tableNameSeq[2]=='1400') :
                 tableNameReturn.append(tableName)
