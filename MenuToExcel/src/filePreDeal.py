@@ -5,7 +5,6 @@ from os.path import exists as pathExists
 import sys
 import os
 
-fileRelativePath = "../"
 menuFileName = "MENU.C"
 fileEncoding = 'UTF-8'
 
@@ -83,11 +82,7 @@ def deleteSpaceLine(text):
 		else:
 			if not text[spaceBeginIndex:spaceEndIndex].isspace():
 				textTmp = textTmp+text[spaceBeginIndex:spaceEndIndex]
-	
-	# if textTmp[:textTmp.find('\n')+1].isspace():
 
-	if textTmp[:textTmp.find('\n')+1].isspace():
-		textTmp = textTmp[textTmp.find('\n')+1:]
 	return textTmp
 
 def deleteComments(text, comments):
@@ -107,7 +102,8 @@ def deleteComments(text, comments):
 
 
 def getTextFromFile(filename):
-	f = open(filename, 'r', encoding=fileEncoding)
+	fileRelativePath = "../"
+	f = open(fileRelativePath+filename, 'r', encoding=fileEncoding)
 	text = f.read()
 	f.close()
 	return text
@@ -161,7 +157,7 @@ def getComments(flag):
 		exit(0)
 
 
-def main():
+"""def main():
 	files = [] # stores files that need to be cleaned
 	flag = "" # stores flag passed as an argument
 	if len(sys.argv) > 1:
@@ -178,6 +174,8 @@ def main():
 		print("Expected: commentsDeleter.py -language 'file 1' 'file 2' 'ect...'")
 		exit(0)
 
+	flag = "-cpp"
+	files = ["MENU.C"]
 	comments = getComments(flag)
 	for filename in files:
 		text = getTextFromFile(filename)
@@ -186,4 +184,19 @@ def main():
 		saveTextToFile(dirName, filename, newText)
 
 if __name__ == '__main__':
-	main()
+	main()"""
+
+def filePreDeal(files=["MENU.C"], flag = "-cpp"):
+	comments = getComments(flag)
+	dirNames = []
+	for filename in files:
+		text = getTextFromFile(filename)
+		newText = deleteComments(text, comments)
+		dirName = "."
+		saveTextToFile(dirName, 'tmp'+filename, newText)
+		dirNames.append(filename)
+	return dirNames
+
+if __name__=="__main__":
+	os.chdir('.\\'+'src')
+	print(filePreDeal())
