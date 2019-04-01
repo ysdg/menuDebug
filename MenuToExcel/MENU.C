@@ -1,4 +1,4 @@
-unsigned char code MENU1[][5]= {//浓浆
+unsigned char code MENU01[][5]= {//浓浆
  	{OB_H_60S_M_5S|Time_OR_Temp   	,TIME_x_M_y_S(20,00)	,HEAT_L1_0_0	,Temp80},
 	{OB_H_30S_M_5S|Time_OR_Temp   	,TIME_x_M_y_S(20,00)    ,HEAT_L0_9_0	,Temp87},
 	{OB_NULL|End_Time             	,TIME_x_M_y_S(0,10)   	,0           	,0},
@@ -26,7 +26,7 @@ unsigned char code MENU1[][5]= {//浓浆
 	{OB_H_30S_M_5S|End_Time 		,TIME_x_M_y_S(1,00)		,L1				,0},
 	{0,0,0,0,0}		 						                                        
 };  
-unsigned char code MENU2[][5]= {//浓汤
+unsigned char code MENU02[][5]= {//浓汤
 	{OB_Heater|Time_OR_Temp   		,TIME_x_M_y_S(20,00)	,HEAT_L1_0_0	,Temp75}, 	
 	{OB_Heater|Time_OR_Temp   		,TIME_x_M_y_S(20,00)	,HEAT_L0_9_0	,Temp83}, 
 	{OB_Heater|Time_OR_Fy  		    ,TIME_x_M_y_S(4,00)		,HEAT_L0_5_0	,0},
@@ -83,14 +83,14 @@ unsigned char code MENU2[][5]= {//浓汤
 	{OB_H_60S_M_5S|End_Time			,TIME_x_M_y_S(3,0)		,L1			    ,0},
 	{0,0,0,0,0}	                                                                                    		
 };
-unsigned char code MENU3[][5]= {//花果茶
+unsigned char code MENU03[][5]= {//花果茶
 	{OB_Heater|End_Temp   			,TIME_x_M_y_S(24,0)		,HEAT_L1_0_0	,Temp85},
 	{OB_Heater|Time_OR_Fy 			,TIME_x_M_y_S(5,40)		,HEAT_L0_3_0	,0},
 	{OB_NULL|End_Time     			,TIME_x_M_y_S(0,20)		,0          	,DISP_UPDATE},
 	{OB_Heater|End_Time   			,TIME_x_M_y_S(60,0)		,L1				,0},
 	{0,0,0,0,0}	 
 };
-unsigned char code MENU4[][5]= {//滋补糊
+unsigned char code MENU04[][5]= {//滋补糊
 	{OB_H_20S_M_0_1S|Time_OR_Temp   ,TIME_x_M_y_S(20,00)	,HEAT_L0_9_0	,Temp87},
 	{OB_H_30S_M_5S|Time_OR_Temp   	,TIME_x_M_y_S(20,00)	,HEAT_L0_8_0	,Temp89},	
 	{OB_Heater|Time_OR_Fy      		,TIME_x_M_y_S(5,0)		,HEAT_L0_4_0	,Temp89},
@@ -122,7 +122,7 @@ unsigned char code MENU4[][5]= {//滋补糊
 	{OB_Motor|End_Time            	,TIME_x_M_y_S(0,20)		,MOTOR_MODE  	,L5},
 	{0,0,0,0,0}	 	
 };
-unsigned char code MENU5[][5]= {//养生粥
+unsigned char code MENU05[][5]= {//养生粥
 	{OB_H_20S_M_0_1S|Time_OR_Temp   ,TIME_x_M_y_S(20,00)   	,HEAT_L0_9_0	,Temp87},
 	{OB_H_30S_M_5S|Time_OR_Temp   	,TIME_x_M_y_S(20,00)    ,HEAT_L0_7_0	,Temp89},
 	{OB_Heater|Time_OR_Fy      		,TIME_x_M_y_S(4,30)   	,HEAT_L0_4_0	,Temp89},
@@ -137,7 +137,7 @@ unsigned char code MENU5[][5]= {//养生粥
 	{OB_H_120S_M_5S|End_Time      	,TIME_x_M_y_S(6,0)    	,L1				,Temp89},
 	{0,0,0,0,0}	 	
 };
-unsigned char code MENU6[][5] = {//酱料
+unsigned char code MENU06[][5] = {//酱料
 	{OB_Motor|End_Time   			,TIME_x_M_y_S(1,0) 		,MOTOR_MODE  	,L6},
 	{OB_NULL|End_Time    			,TIME_x_M_y_S(0,2)      ,0           	,0 },
 	{OB_Motor|End_Time   			,TIME_x_M_y_S(1,0) 		,MOTOR_MODE  	,L7},
@@ -152,11 +152,11 @@ unsigned char code MENU6[][5] = {//酱料
 	{OB_NULL|End_Time       		,TIME_x_M_y_S(0,2)      ,0          	,0},
 	{0,0,0,0,0}	
 };
-unsigned char code MENU7[][5] = {//西洋参粉
+unsigned char code MENU07[][5] = {//西洋参粉
 	{OB_Motor|End_Time   			,TIME_x_M_y_S(1,30)  	,MOTOR_MODE  	,L7},
 	{0,0,0,0,0}	
 };
-unsigned char code MENU8[][5] = {//果蔬汁
+unsigned char code MENU08[][5] = {//果蔬汁
 	{OB_Motor|End_Time   			,TIME_x_M_y_S(0,25) 	,MOTOR_MODE 	,L8},
 	{OB_NULL|End_Time    			,TIME_x_M_y_S(0,2)  	,0           	,0},
 	{OB_Motor|End_Time   			,TIME_x_M_y_S(0,35) 	,MOTOR_MODE 	,L2},
@@ -167,7 +167,7 @@ unsigned char code MENU8[][5] = {//果蔬汁
 	{OB_NULL|End_Time    			,TIME_x_M_y_S(0,2)  	,0           	,0},
 	{0,0,0,0,0}		
 };
-unsigned char code MENU9[][5]={//奶昔
+unsigned char code MENU09[][5]={//奶昔
 	{OB_Motor|End_Time				,TIME_x_M_y_S(1,5) 		,MOTOR_MODE 	,L5},
 	{OB_NULL|End_Time    			,TIME_x_M_y_S(0,2)  	,0           	,0},
 	{0,0,0,0,0}																					

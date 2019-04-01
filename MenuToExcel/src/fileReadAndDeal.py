@@ -36,9 +36,10 @@ def main():
 	f = openTextFile(filePreDeal()[0])
 	wb = openExcelWorkBook()
 	sheetRowIndex = 1
-	for i in range(len(menuNameDict)):
+	# for i in range(len(menuNameDict)):
 		# menuName = list(menuNameDict)[i]
-		lineData = f.readline()
+		# lineData = f.readline()
+	for lineData in f.readlines():
 		lineData = ''.join(lineData.split())
 		lineDataDealed =  dealLineDat(lineData)
 		if type(lineDataDealed) is list:

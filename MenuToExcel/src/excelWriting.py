@@ -34,6 +34,7 @@ def createNewSheet(workBook, nameKey='MENU1'):
 	return workBook[menuNameDict[nameKey]]
 def writeRowData(sheet, row, values):
 	step = row
+	if values == ['0', '0', '0', '0', '0'] or values==[]: return 0
 	if row==1:
 		sheet.append(excelColName)
 		sheet['A'+str(row)].alignment = align
@@ -48,13 +49,17 @@ def writeRowData(sheet, row, values):
 		ctrlMess = heatRankDict[values[-2]]+'档'+workHeadDictH[values[0]]
 	elif values[0]==list(workHeadDictH)[1]:
 		ctrlMess = heatRankDict[values[-1]]+'档'+workHeadDictH[values[0]]
-	else: ctrlMess = heatRankDict[values[-2]]
-	if int(values[3]) > 60: stepTime = '01:'+str(int(values[3])-60).zfill(2)+':'+values[4]
-	else: stepTime = '00:'+values[3]+':'+values[4]
+	elif values[0]==list(workHeadDictH)[0]:
+		ctrlMess = workHeadDictH[values[0]]
+	elif values[0]==list(workHeadDictH)[4]:
+		ctrlMess = workHeadDictH[values[0]]+'上'+values[-2]+'到'+values[-1]+'步'
+	else: ctrlMess = values[0]
+	if int(values[3]) > 60: stepTime = '01:'+str(int(values[3])-60).zfill(2)+':'+str(int(values[4])).zfill(2)
+	else: stepTime = '00:'+str(int(values[3])).zfill(2)+':'+str(int(values[4])).zfill(2)
 	remainTime = 0
 	endCondition = workHeadDictL[values[1]]
 	sheet.append(RowData(step, ctrlMess, stepTime, remainTime, '以'+endCondition).toList())
-	sheet.cell(row, column=3).number_format = openpyxl.styles.numbers.FORMAT_DATE_TIME4
+	sheet.cell(row, column=3).number_format = openpyxl.styles.numbers.FORMAT_DATE_TIME6
 
 	sheet['A'+str(row+1)].alignment = align
 	sheet['B'+str(row+1)].alignment = align

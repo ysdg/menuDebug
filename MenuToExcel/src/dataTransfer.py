@@ -2,16 +2,16 @@
 # -*- coding: utf-8 -*-
 machineName = "L18-Y930"
 menuNameDict = {
-	"MENU0"		: "十分浓浆",
-	"MENU1"		: "十分浓汤",
-	"MENU2"		: "花果茶",
-	"MENU3"		: "滋补糊",
-	"MENU4"		: "养生粥",
-	"MENU5"		: "酱料",
-	"MENU6"		: "西洋参粉",
-	"MENU7"		: "果蔬汁",
-	"MENU8"		: "奶昔",
-	"MENU9"		: "冰沙",
+	"MENU00"	: "十分浓浆",
+	"MENU01"	: "十分浓汤",
+	"MENU02"	: "花果茶",
+	"MENU03"	: "滋补糊",
+	"MENU04"	: "养生粥",
+	"MENU05"	: "酱料",
+	"MENU06"	: "西洋参粉",
+	"MENU07"	: "果蔬汁",
+	"MENU08"	: "奶昔",
+	"MENU09"	: "冰沙",
 	"MENU10"	: "清洗",
 	"MENU11"	: "remained",
 }
