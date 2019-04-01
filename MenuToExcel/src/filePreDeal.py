@@ -193,10 +193,12 @@ def filePreDeal(files=["MENU.C"], flag = "-cpp"):
 		text = getTextFromFile(filename)
 		newText = deleteComments(text, comments)
 		dirName = "."
-		saveTextToFile(dirName, 'tmp'+filename, newText)
-		dirNames.append(filename)
+		saveFilename = 'tmp'+filename
+		saveTextToFile(dirName, saveFilename, newText)
+		dirNames.append(saveFilename)
 	return dirNames
 
 if __name__=="__main__":
 	os.chdir('.\\'+'src')
-	print(filePreDeal())
+	fileNames = filePreDeal()
+	print(fileNames)
