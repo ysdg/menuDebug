@@ -102,7 +102,7 @@ def deleteComments(text, comments):
 
 
 def getTextFromFile(filename):
-	fileRelativePath = "../"
+	fileRelativePath = "./"
 	f = open(fileRelativePath+filename, 'r', encoding=fileEncoding)
 	text = f.read()
 	f.close()
@@ -199,6 +199,6 @@ def filePreDeal(files=["MENU.C"], flag = "-cpp"):
 	return dirNames
 
 if __name__=="__main__":
-	os.chdir('.\\'+'src')
+	# os.chdir('.\\'+'src')
 	fileNames = filePreDeal()
 	print(fileNames)

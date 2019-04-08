@@ -32,7 +32,7 @@ def dealLineDat(linedata:str):
 		return strList
 
 def main():
-	os.chdir('.\\'+'src')
+	# os.chdir('.\\'+'src')
 	f = openTextFile(filePreDeal()[0])
 	wb = openExcelWorkBook()
 	sheetRowIndex = 1
@@ -64,6 +64,7 @@ def main():
 	# lineData = "{OB_Motor|End_Time,TIME_x_M_y_S(0,10),MOTOR_MODE,L1},"
 	
 	closeTextFile(f)
+	input("successfully, input any key to end!")
 
 if __name__ == "__main__":
 	main()
