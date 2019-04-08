@@ -42,18 +42,34 @@ def writeRowData(sheet, row, values):
 		sheet['C'+str(row)].alignment = align
 		sheet['D'+str(row)].alignment = align
 		sheet['E'+str(row)].alignment = align
-	if values[0] in list(workHeadDictH)[5:10]:
-		if values[-2] in list(heatRankDict):
-			ctrlMess = heatRankDict[values[-2]]+'档加热'+'\n'+'('+workHeadDictH[values[0]]+')'
-	elif values[0]==list(workHeadDictH)[2]:
-		ctrlMess = heatRankDict[values[-2]]+'档'+workHeadDictH[values[0]]
-	elif values[0]==list(workHeadDictH)[1]:
-		ctrlMess = heatRankDict[values[-1]]+'档'+workHeadDictH[values[0]]
-	elif values[0]==list(workHeadDictH)[0]:
-		ctrlMess = workHeadDictH[values[0]]
-	elif values[0]==list(workHeadDictH)[4]:
-		ctrlMess = workHeadDictH[values[0]]+'上'+values[-2]+'到'+values[-1]+'步'
-	else: ctrlMess = values[0]
+
+	if values[1]=="END_TEMP" or values[1]=="END_TIME_OR_TEMP" or values[1]=="END_TIME_AND_TEMP" or values[1]=="END_TIME_OR_TEMP_OR_TEMP_CTRL" or values[1]=="END_TEMP_OR_FY" or values[1]=="END_TIME_OR_TEMP_OR_FY":
+		if values[0] in list(workHeadDictH)[5:10]:
+			if values[-2] in list(heatRankDict):
+				ctrlMess = heatRankDict[values[-2]]+'档加热至'+values[-1]+'度'+'\n'+'('+workHeadDictH[values[0]]+')'
+		elif values[0]==list(workHeadDictH)[2]:
+			ctrlMess = heatRankDict[values[-2]]+'档'+workHeadDictH[values[0]]+'至'+values[-1]+'度'
+		elif values[0]==list(workHeadDictH)[1]:
+			ctrlMess = heatRankDict[values[-1]]+'档'+workHeadDictH[values[0]]
+		elif values[0]==list(workHeadDictH)[0]:
+			ctrlMess = workHeadDictH[values[0]]
+		elif values[0]==list(workHeadDictH)[4]:
+			ctrlMess = workHeadDictH[values[0]]+'上'+values[-2]+'到'+values[-1]+'步'
+		else: ctrlMess = values[0]
+	else:
+		if values[0] in list(workHeadDictH)[5:10]:
+			if values[-2] in list(heatRankDict):
+				ctrlMess = heatRankDict[values[-2]]+'档加热'+'\n'+'('+workHeadDictH[values[0]]+')'
+		elif values[0]==list(workHeadDictH)[2]:
+			ctrlMess = heatRankDict[values[-2]]+'档'+workHeadDictH[values[0]]
+		elif values[0]==list(workHeadDictH)[1]:
+			ctrlMess = heatRankDict[values[-1]]+'档'+workHeadDictH[values[0]]
+		elif values[0]==list(workHeadDictH)[0]:
+			ctrlMess = workHeadDictH[values[0]]
+		elif values[0]==list(workHeadDictH)[4]:
+			ctrlMess = workHeadDictH[values[0]]+'上'+values[-2]+'到'+values[-1]+'步'
+		else: ctrlMess = values[0]
+
 	if int(values[3]) > 60: stepTime = '01:'+str(int(values[3])-60).zfill(2)+':'+str(int(values[4])).zfill(2)
 	else: stepTime = '00:'+str(int(values[3])).zfill(2)+':'+str(int(values[4])).zfill(2)
 	remainTime = 0
@@ -72,7 +88,7 @@ if __name__=="__main__":
 	wb = openExcelWorkBook()
 	curSheet = createNewSheet(wb, "MENU1")
 	# curSheet.alignments = openpyxl.styles.Alignment(horizontal="center", vertical="center", wrap_text=True)
-	writeRowData(curSheet, 1, ['OB_H_60S_M_5S', 'Time_OR_Temp', 'TIME_x_M_y_S', '20', '00', 'HEAT_L1_0_0', 'Temp80'])
+	# writeRowData(curSheet, 1, ['OB_H_60S_M_5S', 'Time_OR_Temp', 'TIME_x_M_y_S', '20', '00', 'HEAT_L1_0_0', 'Temp80'])
 	
 	curSheet.column_dimensions['A'].width = 10
 	curSheet.column_dimensions['B'].width = 30
