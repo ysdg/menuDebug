@@ -53,6 +53,8 @@ def writeRowData(sheet, row, values):
 		ctrlMess = workHeadDictH[values[0]]
 	elif values[0]==list(workHeadDictH)[4]:
 		ctrlMess = workHeadDictH[values[0]]+'上'+values[-2]+'到'+values[-1]+'步'
+	elif values[0]==list(workHeadDictH)[-1]:
+		ctrlMess = heatRankDict[values[-1]]+'档'+workHeadDictH[values[0]]
 	else: ctrlMess = values[0]
 	if int(values[3]) > 60: stepTime = '01:'+str(int(values[3])-60).zfill(2)+':'+str(int(values[4])).zfill(2)
 	else: stepTime = '00:'+str(int(values[3])).zfill(2)+':'+str(int(values[4])).zfill(2)

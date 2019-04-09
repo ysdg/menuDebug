@@ -2,18 +2,18 @@
 # -*- coding: utf-8 -*-
 machineName = "L18-Y930"
 menuNameDict = {
-	"MENU00"	: "十分浓浆",
-	"MENU01"	: "十分浓汤",
-	"MENU02"	: "花果茶",
-	"MENU03"	: "滋补糊",
-	"MENU04"	: "养生粥",
-	"MENU05"	: "酱料",
-	"MENU06"	: "西洋参粉",
-	"MENU07"	: "果蔬汁",
-	"MENU08"	: "奶昔",
-	"MENU09"	: "冰沙",
-	"MENU10"	: "清洗",
-	"MENU11"	: "remained",
+	"MENU01"	: "十分低水位1",
+	"MENU02"	: "十分低水位2",
+	"MENU03"	: "十分低水位3",
+	"MENU04"	: "十分低水位4",
+	"MENU05"	: "十分低水位5",
+	"MENU06"	: "十分低水位6",
+	"MENU07"	: "十分低水位7",
+	"MENU08"	: "十分低水位8",
+	"MENU09"	: "十分低水位9",
+	"MENU10"	: "十分低水位10",
+	"MENU11"	: "十分低水位11",
+	"MENU12"	: "十分低水位12",
 }
 workHeadDictH = {
 	'OB_NULL'         	: "等待",
@@ -22,11 +22,11 @@ workHeadDictH = {
 	'OB_Buz'			: "蜂鸣器",
 	'OB_Repeat'			: "重复",
 	'OB_H_20S_M_0_1S'	: "每20秒2档搅拌0.1秒",
-	'OB_H_30S_M_5S'		: "每30秒1档搅拌5秒",
+	'OB_M_H_3P20'		: "每20秒1档搅拌3秒",
 	'OB_H_60S_M_5S'		: "每60秒1档搅拌5秒",
 	'OB_H_120S_M_5S'	: "每120秒1档搅拌5秒",
 	'OB_H_CONST_T'		: "恒温加热",
-	'OB_Motor_1Heat'	: "搅拌+1档加热"
+	'OB_M_H'			: "搅拌+1档加热"
 }
 workHeadDictL = {
 	"End_Time"					: "时间",
@@ -35,7 +35,8 @@ workHeadDictL = {
 	"Time_AND_Temp"				: "时间和温度",
 	"Time_OR_Fy"				: "时间或防溢",
 	"Time_ORTemp_OR_TempCtrl"	: "时间或温度或突跳器",
-	"Temp_OR_Fy"				: "温度或防溢"
+	"Temp_OR_Fy"				: "温度或防溢",
+	"Time_OR_Temp_OR_Fy"		: "时间或温度或防溢"
 }
 heatRankDict = {
 	"HEAT_L0_0_5" : "0.5",
