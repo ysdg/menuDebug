@@ -58,6 +58,11 @@ def main():
 			sheetRowIndex = 1
 		elif type(lineDataDealed) is int:
 			print("something wrong!")
+	curSheet.column_dimensions['A'].width = 10
+	curSheet.column_dimensions['B'].width = 30
+	curSheet.column_dimensions['C'].width = 15
+	curSheet.column_dimensions['D'].width = 15
+	curSheet.column_dimensions['E'].width = 30
 	saveExcelWorkBook(wb)
 
 		
