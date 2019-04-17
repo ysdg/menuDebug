@@ -1,3 +1,5 @@
+# !/usr/bin/env python
+# -*- coding: utf-8 -*-
 from psycopg2 import connect as psycopg2Connect
 from sqlite3 import connect as sqlite3Connect
 
@@ -147,7 +149,7 @@ def sqlDebug(dbType):
 	# curConn.execute(sql)
 	# tableNames = [a[0] for a in curConn.fetchall()]
 	# print(tableNames)
-	sql = "SELECT * FROM sqlite_master WHERE type='table' ORDER BY rowid"
+	sql = "SELECT name FROM sqlite_master"
 	curConn.execute(sql)
 	# print(curConn.fetchall())
 	print([i[1] for i in curConn.fetchall()])

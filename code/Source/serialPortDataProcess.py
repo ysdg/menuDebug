@@ -1,3 +1,5 @@
+# !/usr/bin/env python
+# -*- coding: utf-8 -*-
 from serial import Serial as serialSerial
 from databaseProcess import *
 from matPlotFromDb import *
@@ -58,5 +60,5 @@ def main():
 	databaseClose(dbConnect, dbType)
 	ser.close()
 
-# if __name__=='__main__':
-main()
+if __name__=='__main__':
+	main()
