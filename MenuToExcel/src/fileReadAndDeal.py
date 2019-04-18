@@ -15,11 +15,13 @@ def closeTextFile(fOpen):
 def readTextLine(fOpen):
 	fOpen.readline()
 def dealLineDat(linedata:str):
-	"""deal with one line data from file data after pretreament;
+	"""
+	deal with one line data from file data after pretreament;
 	return :
 		int -1 for wrong data;
 		str for MENU name;
-		list for menu useful data;"""
+		list for menu useful data.
+	"""
 	if linedata.isspace(): return -1
 	else:
 		for menuName in list(menuNameDict):
@@ -42,7 +44,7 @@ def main():
 	for lineData in f.readlines():
 		lineData = ''.join(lineData.split())
 		lineDataDealed =  dealLineDat(lineData)
-		if type(lineDataDealed) is list:
+		if type(lineDataDealed) is list and lineDataDealed!=[]:
 			print(lineDataDealed)
 			writeRowData(curSheet, sheetRowIndex, lineDataDealed)
 			sheetRowIndex = sheetRowIndex+1
@@ -58,6 +60,11 @@ def main():
 			sheetRowIndex = 1
 		elif type(lineDataDealed) is int:
 			print("something wrong!")
+	curSheet.column_dimensions['A'].width = 10
+	curSheet.column_dimensions['B'].width = 30
+	curSheet.column_dimensions['C'].width = 15
+	curSheet.column_dimensions['D'].width = 15
+	curSheet.column_dimensions['E'].width = 30
 	saveExcelWorkBook(wb)
 
 		

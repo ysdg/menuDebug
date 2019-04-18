@@ -12,3 +12,4 @@ serialPortDataProcess.exe
 serialPortDataProcess.spec
 dist/
 build/
+code/document/image/*
