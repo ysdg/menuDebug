@@ -4,11 +4,7 @@ import matplotlib.pyplot as plt
 from databaseProcess import *
 from os import mkdir as pathMkdir
 from os.path import exists as pathExists
-
-# tableNames = [i[0] for i in                                 \
-# 				sqlExe("SELECT name FROM sqlite_master      \
-# 						WHERE type='table' ORDER BY rowid") \
-# 					if i[0]!='sqlite_sequence']
+import numpy as np
 
 dataDict = {'time':0, 'header':1, 'sysStatus':2, 'fyValue':3, 'fyAdStand':4, 
 			'fyDistance':5, 'fyFlag':6, 'curTemp':7, 'jumpTemp':8, 'targetTemp':9, 
@@ -49,8 +45,7 @@ class DataToPlot():
 		self.xlabel = xlabel
 		self.ylabel = ylable
 		self.title = title
-		if labels == []: self.labels = self.yclos
-		else: self.labels = labels
+		self.labels = labels
 		self.figsize = [6.4*2, 4.8*2]
 		self.figdpi = 500
 		self.imagePath = "./document/image/"
@@ -90,15 +85,104 @@ class DataToPlot():
 				plt.plot(self.dat[dataDict[self.xclo]], self.dat[dataDict[yclo]], label=tablename)
 		plt.legend()
 		plt.savefig(path+'/'+self.title, dpi=self.figdpi)
+	def plotOnePicture(self, xDats, yDats):
+		""" 
+		plot x, y data to one picture;
+		label, title and so on is based on the class;
+		xDats, yDats: x, y data, must be list and corrosspondly
+		 """
+		path = self.imagePath + self.title +datetime.now().strftime('%Y%m%d_%H%M%S')
+		if not pathExists(path): pathMkdir(path)
+		plt.figure(figsize=self.figsize)
+		plt.title(self.title)
+		plt.xlabel(self.xlabel)
+		plt.ylabel(self.ylabel)
+		for xDat, yDat, label in zip(xDats, yDats, self.labels):
+			plt.plot(xDat, yDat, label=label)
+		plt.legend()
+		plt.savefig(path+'/'+self.title, dpi=self.figdpi)
+	def datProcess(self, tablenames):
+		self.rows = [100, 150]
+		yDats = []
+		xDats = []
+		for i,tablename in enumerate(tablenames):
+			self.dataReadFromTable(tablename)
+			dataCur = self.dat[dataDict["motoCur"]][self.rows[0]:self.rows[1]]
+			dataId = self.dat[dataDict["id"]][self.rows[0]:self.rows[1]]
+			yTmp, xTmp=self.topFilter(dataCur, dataId)
+			xDats.append(xTmp)
+			yDats.append(yTmp)
+			self.labels[i] = tablename.split("_")[2]+'-'+tablename.split("_")[3] +":{:.1f}".format(self.meanFilter(yTmp))
+		self.plotOnePicture(xDats, yDats)
+	def topFilter(self, datas, dataId=[]):
+		dataTmp = []
+		if dataId != []: dataIdTmp=[]
+		for i in range(len(datas)-1):
+			if datas[i]>datas[i-1] and datas[i]>datas[i+1]:
+				dataTmp.append(datas[i])
+				if dataId!=[]: dataIdTmp.append(dataId[i])
+		if dataId != []: return dataTmp, dataIdTmp
+		else: return dataTmp
+	def outValleyFilter(self, datas, dataId=[]):
+		dataTmp = []
+		if dataId != []: dataIdTmp=[]
+		for i in range(len(datas)-1):
+			if datas[i]>datas[i-1] or datas[i]>datas[i+1]:
+				dataTmp.append(datas[i])
+				if dataId!=[]: dataIdTmp.append(dataId[i])
+		if dataId != []: return dataTmp, dataIdTmp
+		else: return dataTmp
+	def meanFilter(self, datas):
+		datasTmp = datas[:]
+		maxDat = datasTmp[0]
+		minDat = datasTmp[0]
+		for dat in datasTmp:
+			if dat > maxDat: maxDat = dat
+			if dat < minDat: minDat = dat
+		datasTmp.remove(maxDat)
+		datasTmp.remove(minDat)
+		return np.mean(datasTmp)
+	def datFliterProcess(self, tablenames):
+		self.rows = [100, 150]
+		xDats,yDats,xTmpTop,yTmpTop,xTmpValley,yTmpValley,xTmpMean,yTmpMean=[],[],[],[],[],[],[],[]
+		for tablename in tablenames:
+			self.dataReadFromTable(tablename)
+			dataCur = self.dat[dataDict["motoCur"]][self.rows[0]:self.rows[1]]
+			yTmpTop.append(self.meanFilter(self.topFilter(dataCur)))
+			xTmpTop.append(int(tablename.split("_")[3][:-2]))
+			yTmpValley.append(self.meanFilter(self.outValleyFilter(dataCur)))
+			xTmpValley.append(int(tablename.split("_")[3][:-2]))
+			yTmpMean.append(self.meanFilter(dataCur))
+			xTmpMean.append(int(tablename.split("_")[3][:-2]))
+		self.labels = []
+		self.labels.append("no fileter mean"), xDats.append(xTmpMean), yDats.append(yTmpMean)
+		self.labels.append("top fileter mean"), xDats.append(xTmpTop), yDats.append(yTmpTop)
+		self.labels.append("out Valley fileter mean"), xDats.append(xTmpValley), yDats.append(yTmpValley)
+		self.xlabel = "water level/ml"
+		self.ylabel = "moto current AD value"
+		self.plotOnePicture(xDats, yDats)
+		print(xDats, yDats)
+
 
 if __name__ == "__main__":
 	datToPlot = DataToPlot(xclo="id")
-	datToPlot.title = "test"
+	datToPlot.title = "linearity of filter"
 	datToPlot.yclos = ["motoCur"]
 	datToPlot.xlabel = "work time /100ms"
 	datToPlot.ylabel = "moto current AD value"
-	tableNames = ["t_motol10_water_1400ml_2019_03_21_09_41_23", "t_motol10_water_1500ml_2019_03_21_09_43_17", "t_motol10_water_1600ml_2019_03_21_09_44_45"]
-	datToPlot.dataPlotFromTables(tableNames)
+	tableNames = [	"t_motol10_water_700ml_2019_03_25_13_47_51",	\
+					"t_motol10_water_800ml_2019_03_25_13_49_51", 	\
+					"t_motol10_water_900ml_2019_03_25_13_51_21", 	\
+					"t_motol10_water_1000ml_2019_03_25_13_52_55", 	\
+					"t_motol10_water_1100ml_2019_03_25_13_54_34", 	\
+					"t_motol10_water_1200ml_2019_03_25_13_56_07", 	\
+					"t_motol10_water_1300ml_2019_03_25_13_57_31", 	\
+					"t_motol10_water_1400ml_2019_03_25_13_59_29", 	\
+					"t_motol10_water_1500ml_2019_03_25_14_01_01", 	\
+					"t_motol10_water_1600ml_2019_03_25_14_02_31", 	\
+					"t_motol10_water_1750ml_2019_03_25_14_04_11"]
+	datToPlot.datFliterProcess(tableNames)
+	# datToPlot.dataPlotFromTables(tableNames)
 	# datToPlot.plot()
 	pass
 

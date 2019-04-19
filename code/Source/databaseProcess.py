@@ -50,19 +50,17 @@ def databaseClose(dbConnect, dbType):
 def dbTableInfoInput(menuMsg="input"):
 	if menuMsg=="input": str = input("Please input menu:")
 	else: str = "soyMilk"
-	if menuMsg=="input": input("Please materials(g):")
-		# str = str +'_'+ "Juice"
+	if menuMsg=="input": str = str+"_"+input("Please materials(g):")+"g"
 	else: str = str+'_'+'140'+'g'
-	if menuMsg=="input": input("Please water level(ml):")
-		#str = str +'_'+"1400"
-	else: str = str+'_'+'1400'+'ml'+'_'+datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
-	return str+'_'+datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
+	if menuMsg=="input": str = str+"_"+input("Please water level(ml):")+"ml"
+	else: str = str+'_'+'1400'+'ml'+'_'+datetime.now().strftime('%Y%m%d_%H%M%S')
+	return str+'_'+datetime.now().strftime('%Y%m%d_%H%M%S')
 
 def dbTableCreate(dbConnect, dataType, dbType='sqlite3'):
 	curConn     = dbConnect.cursor()    
 	if dbType=="postgre": time = 'LOCALTIMESTAMP,'
 	else: time  = 'CURRENT_TIMESTAMP,'
-	tableName   = 'T'+dbTableInfoInput(menuMsg)
+	tableName   = 'T_'+dbTableInfoInput(menuMsg)
 	sql         = "CREATE TABLE %s (%s)"%(tableName, dataType)+';'
 	curConn.execute(sql)
 	dbConnect.commit()
@@ -113,9 +111,13 @@ def dbDataRead(tableName, clomune=[], dbType='sqlite3'):
 def sqlExe(sql, dbCon, dbType='sqlite3'):
 	curConn   = dbCon.cursor()
 	curConn.execute(sql)
-	data      = curConn.fetchall()
+	try:
+		data = curConn.fetchall()
+		return data
+	except:
+		pass
 	dbCon.commit()
-	return data
+	
 
 def dataTableProcess(tableNames):
 	tableNameReturn = []
@@ -137,6 +139,25 @@ def dataTableProcess(tableNames):
 			del tableNameReturn[i]
 	# del tableNameReturn[1:4]
 	return tableNameReturn
+
+def addTableComment(tableName, dbConnect, dbType):
+	comment = input("Pleas input comment for table {}: ".format(str(tableName)))
+	commentAdd = sqlExe("""SELECT
+							description
+						FROM
+							pg_description
+						WHERE 
+							pg_description.objoid= (
+								SELECT 
+									oid 
+								FROM 
+									pg_class 
+								WHERE pg_class.relname='{}')
+						""".format(tableName), dbCon=dbConnect, dbType=dbType)
+	if commentAdd==[]: comment = comment +";"
+	else: comment = comment+";"+commentAdd
+	print(comment)
+	sqlExe("COMMENT ON TABLE {} IS '{}'".format(tableName, comment), dbCon=dbConnect, dbType=dbType)
 		
 
 def sqlDebug(dbType):
