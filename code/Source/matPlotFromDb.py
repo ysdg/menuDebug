@@ -182,15 +182,4 @@ if __name__ == "__main__":
 					"t_motol10_water_1600ml_2019_03_25_14_02_31", 	\
 					"t_motol10_water_1750ml_2019_03_25_14_04_11"]
 	datToPlot.datFliterProcess(tableNames)
-	# datToPlot.dataPlotFromTables(tableNames)
-	# datToPlot.plot()
 	pass
-
-
-# print(tableNames)
-# for tableName in tableNames:
-#     tableDatPlot(tableName)
-
-# plt.show()
-# print(sqlExe("SELECT id FROM %s"%(tableNames[-1])))
-# print(tableNames)
