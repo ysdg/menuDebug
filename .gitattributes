@@ -1,4 +1,5 @@
 *.c linguist-language=Python
+*.C linguist-language=Python
 *.h linguist-language=Python
 *.py linguist-language=Python
 *.m linguist-language=Python
