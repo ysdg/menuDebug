@@ -43,7 +43,12 @@ def writeRowData(sheet, row, values):
 		sheet['D'+str(row)].alignment = align
 		sheet['E'+str(row)].alignment = align
 
-	if values[1]=="END_TEMP" or values[1]=="END_TIME_OR_TEMP" or values[1]=="END_TIME_AND_TEMP" or values[1]=="END_TIME_OR_TEMP_OR_TEMP_CTRL" or values[1]=="END_TEMP_OR_FY" or values[1]=="END_TIME_OR_TEMP_OR_FY":
+	if  values[1]=="END_TEMP" or 			\
+		values[1]=="END_TIME_OR_TEMP" or 	\
+		values[1]=="END_TIME_AND_TEMP" or 	\
+		values[1]=="END_TIME_OR_TEMP_OR_TEMP_CTRL" or \
+		values[1]=="END_TEMP_OR_FY" or \
+		values[1]=="END_TIME_OR_TEMP_OR_FY":
 		if values[0] in list(workHeadDictH)[5:10]:
 			if values[-2] in list(heatRankDict):
 				ctrlMess = heatRankDict[values[-2]]+'档加热至'+values[-1]+'度'+'\n'+'('+workHeadDictH[values[0]]+')'
