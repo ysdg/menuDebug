@@ -34,36 +34,19 @@ class fileDeal():
 def main():
 	# os.chdir('.\\'+'src')
 	fileDealing = fileDeal(filePreDeal()[0])
-	wb = openExcelWorkBook()
-	sheetRowIndex = 1
-	# for i in range(len(menuNameDict)):
-		# menuName = list(menuNameDict)[i]
-		# lineData = f.readline()
+	excelWritingWb =excelWrite()
 	for lineData in fileDealing.fopen.readlines():
 		lineData = ''.join(lineData.split())
 		lineDataDealed =  fileDealing.dealLineDat(lineData)
 		if type(lineDataDealed) is list and lineDataDealed!=[]:
 			print(lineDataDealed)
-			writeRowData(curSheet, sheetRowIndex, lineDataDealed)
-			sheetRowIndex = sheetRowIndex+1
+			excelWritingWb.writeRowData(lineDataDealed)
 		elif type(lineDataDealed) is str:
-			try: 
-				curSheet.column_dimensions['A'].width = 10
-				curSheet.column_dimensions['B'].width = 30
-				curSheet.column_dimensions['C'].width = 15
-				curSheet.column_dimensions['D'].width = 15
-				curSheet.column_dimensions['E'].width = 30
-			except: pass
-			curSheet = createNewSheet(wb, lineDataDealed)
-			sheetRowIndex = 1
+			excelWritingWb.createNewSheet(lineDataDealed)
 		elif type(lineDataDealed) is int:
 			print("something wrong!")
-	curSheet.column_dimensions['A'].width = 10
-	curSheet.column_dimensions['B'].width = 30
-	curSheet.column_dimensions['C'].width = 15
-	curSheet.column_dimensions['D'].width = 15
-	curSheet.column_dimensions['E'].width = 30
-	saveExcelWorkBook(wb)
+
+	excelWritingWb.saveExcel()
 
 		
 	# lineData = "{OB_Motor|End_Time,TIME_x_M_y_S(0,10),MOTOR_MODE,L1},"

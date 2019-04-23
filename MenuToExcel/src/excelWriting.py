@@ -4,103 +4,86 @@ import openpyxl
 from dataTransfer import *
 from datetime import datetime
 
-excelRelativePath = "../"
-sheetIndex = 0
-excelName = machineName+"菜单流程"+datetime.now().strftime('%Y%m%d_%H%M%S')+".xlsx"
-excelColName = ['步骤', '功能', '步骤时间', '倒计时', '备注']
-align = openpyxl.styles.Alignment(horizontal='right',vertical='center',wrap_text=True)
+class excelWrite(openpyxl.Workbook):
+	def __init__(self):
+		super(excelWrite, self).__init__()
+		print("open excel work book successfully.")
+		self.excelColName = ['步骤', '功能', '步骤时间', '倒计时', '备注']
+		self.excelName = machineName+"菜单流程"+datetime.now().strftime('%Y%m%d_%H%M%S')+".xlsx"
+		self.align = openpyxl.styles.Alignment(horizontal='right',vertical='center',wrap_text=True)
+		self.sheetIndex = 0
+		self.excelRelativePath = "../"
+	def saveExcel(self):
+		self.save(self.excelName)
+		print("save excel: "+self.excelName+", successfully.")
+	def rowData(self, step, ctrlMess, stepTime, remainTime, endCondition):
+		dat = [step, ctrlMess, stepTime, remainTime, endCondition]
+	def createNewSheet(self, nameKey):
+		self.curSheet = self.create_sheet(menuNameDict[nameKey])
+		self.curSheetRow = 1
+		print("Create sheet: "+menuNameDict[nameKey]+", successfully.")
+		if self.sheetnames[0]=="Sheet": self.remove(self["Sheet"])
+	def rowAlignSet(self):
+		self.curSheet['A'+str(self.curSheetRow)].alignment = self.align
+		self.curSheet['B'+str(self.curSheetRow)].alignment = self.align
+		self.curSheet['C'+str(self.curSheetRow)].alignment = self.align
+		self.curSheet['D'+str(self.curSheetRow)].alignment = self.align
+		self.curSheet['E'+str(self.curSheetRow)].alignment = self.align
+		self.curSheet.column_dimensions['A'].width = 10
+		self.curSheet.column_dimensions['B'].width = 30
+		self.curSheet.column_dimensions['C'].width = 15
+		self.curSheet.column_dimensions['D'].width = 15
+		self.curSheet.column_dimensions['E'].width = 30
+	def writeRowData(self, dat):
+		step = self.curSheetRow-1
+		if  dat == ['0', '0', '0', '0', '0'] or dat==[]: 
+			self.curSheetRow = self.curSheetRow+1
+			return 
+		if self.curSheetRow==1:
+			self.curSheet.append(self.excelColName)
+			self.rowAlignSet()
+			self.curSheetRow = self.curSheetRow+1
+			return
 
-class RowData():
-	def __init__(self, step, ctrlMess, stepTime, remainTime, endCondition):
-		self.step = step
-		self.ctrlMess = ctrlMess
-		self.stepTime = stepTime
-		self.remainTime = remainTime
-		self.endCondition = endCondition
-	def toList(self):
-		return [self.step, self.ctrlMess, self.stepTime, self.remainTime, self.endCondition]
+		if  dat[1].find("Temp")!=-1 and \
+			dat[1].find("TEMP")!=-1 and \
+			dat[1].find("temp")!=-1:
+			if dat[0] in list(workHeadDictH)[5:10]:
+				if dat[-2] in list(heatRankDict):
+					ctrlMess = heatRankDict[dat[-2]]+'档加热至'+dat[-1]+'度'+'\n'+'('+workHeadDictH[dat[0]]+')'
+			elif dat[0]==list(workHeadDictH)[2]:
+				ctrlMess = heatRankDict[dat[-2]]+'档'+workHeadDictH[dat[0]]+'至'+dat[-1]+'度'
+			elif dat[0]==list(workHeadDictH)[1]:
+				ctrlMess = heatRankDict[dat[-1]]+'档'+workHeadDictH[dat[0]]
+			elif dat[0]==list(workHeadDictH)[0]:
+				ctrlMess = workHeadDictH[dat[0]]
+			elif dat[0]==list(workHeadDictH)[4]:
+				ctrlMess = workHeadDictH[dat[0]]+'上'+dat[-2]+'到'+dat[-1]+'步'
+			else: ctrlMess = dat[0]
+		else:
+			if dat[0] in list(workHeadDictH)[5:10]:
+				if dat[-2] in list(heatRankDict):
+					ctrlMess = heatRankDict[dat[-2]]+'档加热'+'\n'+'('+workHeadDictH[dat[0]]+')'
+			elif dat[0]==list(workHeadDictH)[2]:
+				ctrlMess = heatRankDict[dat[-2]]+'档'+workHeadDictH[dat[0]]
+			elif dat[0]==list(workHeadDictH)[1]:
+				ctrlMess = heatRankDict[dat[-1]]+'档'+workHeadDictH[dat[0]]
+			elif dat[0]==list(workHeadDictH)[0]:
+				ctrlMess = workHeadDictH[dat[0]]
+			elif dat[0]==list(workHeadDictH)[4]:
+				ctrlMess = workHeadDictH[dat[0]]+'上'+dat[-2]+'到'+dat[-1]+'步'
+			else: ctrlMess = workHeadDictH[dat[0]]
 
-def openExcelWorkBook(writeOnly=False):
-	wb = openpyxl.Workbook(write_only=writeOnly)
-	print("open excel work book successfully.")
-	return wb
-def saveExcelWorkBook(workBook, Name = excelName):
-	workBook.save(Name)
-	print("save excel: "+Name+", successfully.")
-def createNewSheet(workBook, nameKey='MENU1'):
-	workBook.create_sheet(menuNameDict[nameKey])
-	print("Create sheet: "+menuNameDict[nameKey]+", successfully.")
-	if workBook.sheetnames[0]=="Sheet": workBook.remove(workBook["Sheet"])
-	return workBook[menuNameDict[nameKey]]
-def writeRowData(sheet, row, values):
-	step = row
-	if values == ['0', '0', '0', '0', '0'] or values==[]: return 0
-	if row==1:
-		sheet.append(excelColName)
-		sheet['A'+str(row)].alignment = align
-		sheet['B'+str(row)].alignment = align
-		sheet['C'+str(row)].alignment = align
-		sheet['D'+str(row)].alignment = align
-		sheet['E'+str(row)].alignment = align
-
-	if  values[1]=="END_TEMP" or 			\
-		values[1]=="END_TIME_OR_TEMP" or 	\
-		values[1]=="END_TIME_AND_TEMP" or 	\
-		values[1]=="END_TIME_OR_TEMP_OR_TEMP_CTRL" or \
-		values[1]=="END_TEMP_OR_FY" or \
-		values[1]=="END_TIME_OR_TEMP_OR_FY":
-		if values[0] in list(workHeadDictH)[5:10]:
-			if values[-2] in list(heatRankDict):
-				ctrlMess = heatRankDict[values[-2]]+'档加热至'+values[-1]+'度'+'\n'+'('+workHeadDictH[values[0]]+')'
-		elif values[0]==list(workHeadDictH)[2]:
-			ctrlMess = heatRankDict[values[-2]]+'档'+workHeadDictH[values[0]]+'至'+values[-1]+'度'
-		elif values[0]==list(workHeadDictH)[1]:
-			ctrlMess = heatRankDict[values[-1]]+'档'+workHeadDictH[values[0]]
-		elif values[0]==list(workHeadDictH)[0]:
-			ctrlMess = workHeadDictH[values[0]]
-		elif values[0]==list(workHeadDictH)[4]:
-			ctrlMess = workHeadDictH[values[0]]+'上'+values[-2]+'到'+values[-1]+'步'
-		else: ctrlMess = values[0]
-	else:
-		if values[0] in list(workHeadDictH)[5:10]:
-			if values[-2] in list(heatRankDict):
-				ctrlMess = heatRankDict[values[-2]]+'档加热'+'\n'+'('+workHeadDictH[values[0]]+')'
-		elif values[0]==list(workHeadDictH)[2]:
-			ctrlMess = heatRankDict[values[-2]]+'档'+workHeadDictH[values[0]]
-		elif values[0]==list(workHeadDictH)[1]:
-			ctrlMess = heatRankDict[values[-1]]+'档'+workHeadDictH[values[0]]
-		elif values[0]==list(workHeadDictH)[0]:
-			ctrlMess = workHeadDictH[values[0]]
-		elif values[0]==list(workHeadDictH)[4]:
-			ctrlMess = workHeadDictH[values[0]]+'上'+values[-2]+'到'+values[-1]+'步'
-		else: ctrlMess = workHeadDictH[values[0]]
-
-	if int(values[3]) > 60: stepTime = '01:'+str(int(values[3])-60).zfill(2)+':'+str(int(values[4])).zfill(2)
-	else: stepTime = '00:'+str(int(values[3])).zfill(2)+':'+str(int(values[4])).zfill(2)
-	remainTime = 0
-	endCondition = workHeadDictL[values[1]]
-	sheet.append(RowData(step, ctrlMess, stepTime, remainTime, '以'+endCondition).toList())
-	sheet.cell(row, column=3).number_format = openpyxl.styles.numbers.FORMAT_DATE_TIME6
-
-	sheet['A'+str(row+1)].alignment = align
-	sheet['B'+str(row+1)].alignment = align
-	sheet['C'+str(row+1)].alignment = align
-	sheet['D'+str(row+1)].alignment = align
-	sheet['E'+str(row+1)].alignment = align
+		if int(dat[3]) > 60: stepTime = '01:'+str(int(dat[3])-60).zfill(2)+':'+str(int(dat[4])).zfill(2)
+		else: stepTime = '00:'+str(int(dat[3])).zfill(2)+':'+str(int(dat[4])).zfill(2)
+		remainTime = "00:00:00"
+		endCondition = workHeadDictL[dat[1]]
+		self.curSheet.append([step, ctrlMess, stepTime, remainTime, '以'+endCondition])
+		self.curSheet.cell(self.curSheetRow, column=3).number_format = openpyxl.styles.numbers.FORMAT_DATE_TIME6
+		self.rowAlignSet()
+		self.curSheetRow = self.curSheetRow+1
 
 
 if __name__=="__main__":
-	wb = openExcelWorkBook()
-	curSheet = createNewSheet(wb, "MENU1")
-	# curSheet.alignments = openpyxl.styles.Alignment(horizontal="center", vertical="center", wrap_text=True)
-	# writeRowData(curSheet, 1, ['OB_H_60S_M_5S', 'Time_OR_Temp', 'TIME_x_M_y_S', '20', '00', 'HEAT_L1_0_0', 'Temp80'])
-	
-	curSheet.column_dimensions['A'].width = 10
-	curSheet.column_dimensions['B'].width = 30
-	curSheet.column_dimensions['C'].width = 15
-	curSheet.column_dimensions['D'].width = 15
-	curSheet.column_dimensions['E'].width = 30
-
-	# curSheet.alignment = align
-	saveExcelWorkBook(wb)
+	pass
 
