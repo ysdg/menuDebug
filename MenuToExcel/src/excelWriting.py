@@ -36,8 +36,8 @@ class excelWrite(openpyxl.Workbook):
 		self.curSheet.column_dimensions['E'].width = 30
 	def dataRecode(self, dat):
 		step = self.curSheetRow-1
-		if  dat[1].find("Temp")!=-1 and \
-			dat[1].find("TEMP")!=-1 and \
+		if  dat[1].find("Temp")!=-1 or \
+			dat[1].find("TEMP")!=-1 or \
 			dat[1].find("temp")!=-1:
 			if dat[0] in list(workHeadDictH)[5:10]:
 				if dat[-2] in list(heatRankDict):

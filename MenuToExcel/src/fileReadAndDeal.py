@@ -29,23 +29,24 @@ class fileDeal():
 			linedata = linedata[linedata.find('{')+1:linedata.find('}')]
 			strList = reSplit(",|\(|\)|\|", linedata)
 			if '' in strList: strList.remove('')
-			return strList		
+			return strList
+	def fileToExcel(self, excelWb: excelWrite):
+		for lineData in self.fopen.readlines():
+			lineData = ''.join(lineData.split())
+			lineDataDealed =  self.dealLineDat(lineData)
+			if type(lineDataDealed) is list and lineDataDealed!=[]:
+				print(lineDataDealed)
+				excelWb.writeRowData(lineDataDealed)
+			elif type(lineDataDealed) is str:
+				excelWb.createNewSheet(lineDataDealed)
+			elif type(lineDataDealed) is int:
+				print("something wrong!")
 
 def main():
 	# os.chdir('.\\'+'src')
 	fileDealing = fileDeal(filePreDeal()[0])
 	excelWritingWb =excelWrite()
-	for lineData in fileDealing.fopen.readlines():
-		lineData = ''.join(lineData.split())
-		lineDataDealed =  fileDealing.dealLineDat(lineData)
-		if type(lineDataDealed) is list and lineDataDealed!=[]:
-			print(lineDataDealed)
-			excelWritingWb.writeRowData(lineDataDealed)
-		elif type(lineDataDealed) is str:
-			excelWritingWb.createNewSheet(lineDataDealed)
-		elif type(lineDataDealed) is int:
-			print("something wrong!")
-
+	fileDealing.fileToExcel(excelWritingWb)
 	excelWritingWb.saveExcel()
 
 		
