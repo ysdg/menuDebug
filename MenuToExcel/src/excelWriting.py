@@ -34,17 +34,8 @@ class excelWrite(openpyxl.Workbook):
 		self.curSheet.column_dimensions['C'].width = 15
 		self.curSheet.column_dimensions['D'].width = 15
 		self.curSheet.column_dimensions['E'].width = 30
-	def writeRowData(self, dat):
+	def dataRecode(self, dat):
 		step = self.curSheetRow-1
-		if  dat == ['0', '0', '0', '0', '0'] or dat==[]: 
-			self.curSheetRow = self.curSheetRow+1
-			return 
-		if self.curSheetRow==1:
-			self.curSheet.append(self.excelColName)
-			self.rowAlignSet()
-			self.curSheetRow = self.curSheetRow+1
-			return
-
 		if  dat[1].find("Temp")!=-1 and \
 			dat[1].find("TEMP")!=-1 and \
 			dat[1].find("temp")!=-1:
@@ -74,12 +65,26 @@ class excelWrite(openpyxl.Workbook):
 				ctrlMess = workHeadDictH[dat[0]]+'上'+dat[-2]+'到'+dat[-1]+'步'
 			else: ctrlMess = workHeadDictH[dat[0]]
 
-		if int(dat[3]) > 60: stepTime = '01:'+str(int(dat[3])-60).zfill(2)+':'+str(int(dat[4])).zfill(2)
-		else: stepTime = '00:'+str(int(dat[3])).zfill(2)+':'+str(int(dat[4])).zfill(2)
-		remainTime = "00:00:00"
-		endCondition = workHeadDictL[dat[1]]
-		self.curSheet.append([step, ctrlMess, stepTime, remainTime, '以'+endCondition])
+		if int(dat[3]) > 60: 
+			stepTime = '1:'+str(int(dat[3])-60).zfill(2)+':'+str(int(dat[4])).zfill(2)
+		else: 
+			stepTime = '0:'+str(int(dat[3])).zfill(2)+':'+str(int(dat[4])).zfill(2)
+		remainTime = "0:00:00"
+		endCondition = '以'+workHeadDictL[dat[1]]
+		return [step, ctrlMess, stepTime, remainTime, endCondition]
+
+	def writeRowData(self, dat):
+		if  dat == ['0', '0', '0', '0', '0'] or dat==[]: 
+			self.curSheetRow = self.curSheetRow+1
+			return 
+		if self.curSheetRow==1:
+			self.curSheet.append(self.excelColName)
+			self.rowAlignSet()
+			self.curSheetRow = self.curSheetRow+1
+			return
+		self.curSheet.append(self.dataRecode(dat))
 		self.curSheet.cell(self.curSheetRow, column=3).number_format = openpyxl.styles.numbers.FORMAT_DATE_TIME6
+		self.curSheet.cell(self.curSheetRow, column=4).number_format = openpyxl.styles.numbers.FORMAT_DATE_TIME6
 		self.rowAlignSet()
 		self.curSheetRow = self.curSheetRow+1
 
