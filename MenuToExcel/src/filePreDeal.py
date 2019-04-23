@@ -198,7 +198,7 @@ def filePreDeal(files=["MENU.C"], flag = "-cpp"):
 		dirNames.append(saveFilename)
 	return dirNames
 
-if __name__=="__main__":
+""" if __name__=="__main__":
 	# os.chdir('.\\'+'src')
 	fileNames = filePreDeal()
-	print(fileNames)
+	print(fileNames) """
