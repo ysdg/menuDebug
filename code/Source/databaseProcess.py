@@ -5,7 +5,23 @@ from sqlite3 import connect as sqlite3Connect
 from datetime import datetime
 
 class databaseOperation():
+	""" 
+	class for database operation, including:
+		open, close based on DB;
+		read, write, comment, delete based on tableName.
+	 """
 	def __init__(self, database="menu_debug_data", user="yuanquan", password="yuanquan"):
+		""" 
+		database: database name, "menu_debug_data" by default;
+		user: database user name, "yuanquan" by default;
+		password: database password of user, "yuanquan" by default;
+		
+		dataType: DB data type init;
+		dataTypeName: DB data columens name;
+		sqlite3DbPath: the database file relative path if database is sqlite3;
+		menuMsg: tablename of DB is input or default;
+		dbCon: DB connect.
+		 """
 		self.database = database
 		self.user = user
 		self.password = password
@@ -35,12 +51,18 @@ class databaseOperation():
 		self.dbCon = None
 
 	def databaseOpen(self):
+		""" 
+		get connetion of database to self.dbCon, for postgre or sqlite3.
+		 """
 		if self.dbType=="postgre": 
 			self.dbCon = psycopg2Connect(database=self.database, user=self.user, password=self.password)
 		else : self.dbCon = sqlite3Connect(self.sqlite3DbPath+self.database)
 		print("Opened ",self.dbType, self.database, "successfully")
 
 	def databaseClose(self):
+		""" 
+		close connetion of database self.dbCon, for postgre of sqlite3.
+		 """
 		self.dbCon.close()
 		if self.dbType=="postgre": 
 			print("Closed",self.dbType,"database connect:", self.dbCon.dsn, ",successfully")
@@ -48,14 +70,25 @@ class databaseOperation():
 			print("Closed",self.dbType,"database connect successfully")
 
 	def dbTableInfoInput(self):
-		if self.menuMsg=="input": str = input("Please input menu:")
-		else: str = "soyMilk"
-		if self.menuMsg=="input": str = str+"_"+input("Please materials(g):")+"g"
-		else: str = str+'_'+'140'+'g'
-		if self.menuMsg=="input": str = str+"_"+input("Please water level(ml):")+"ml"
-		else: str = str+'_'+'1400'+'ml'+'_'+datetime.now().strftime('%Y%m%d_%H%M%S')
-		return str+'_'+datetime.now().strftime('%Y%m%d_%H%M%S')
+		""" 
+		input DB table name, for such information:
+			menu, materials, waterlevel
+		return table name with information and datetime.
+		if not input, soymilk, 140g, 1400ml by default.
+		 """
+		if self.menuMsg=="input":
+			tablename = input("Please input menu:")
+			tablename = tablename + "_" + input("Please materials(g):") + "g"
+			tablename = tablename + "_" + input("Please water level(ml):") + "ml"
+		else:
+			tablename = "soyMilk"+'_'+'140'+'g'+'_'+'1400'+'ml'
+		return tablename+datetime.now().strftime('%Y%m%d_%H%M%S')
+
 	def dbTableCreate(self):
+		""" 
+		create table base on connect of DB;
+		return tablename created.
+		 """
 		curConn     = self.dbCon.cursor()    
 		tableName   = 'T_'+self.dbTableInfoInput()
 		sql         = "CREATE TABLE %s (%s)"%(tableName, self.dataType)+';'
@@ -64,13 +97,22 @@ class databaseOperation():
 		print('Create table:',tableName,'successfully')
 		curConn.close()
 		return tableName
-	def dbDataWrite(self, curConn, tableName, dat):
+
+	def dbDataWrite(self, curConn, tableName:str, dat:list):
+		""" 
+		write dat to DB;
+		time format is difference from DB type.
+		 """
 		if self.dbType=="postgre": time = 'LOCALTIMESTAMP,'
 		else: time = 'CURRENT_TIMESTAMP,'
-		sql     = "INSERT INTO %s(%s) values(%s)"%(tableName, self.dataTypeName, time+str(dat)[1:-1]) +';'
+		sql	= "INSERT INTO %s(%s) values(%s)"%(tableName, self.dataTypeName, time+str(dat)[1:-1]) +';'
 		curConn.execute(sql)
 		self.dbCon.commit()
-	def dbTablesDelete(self, tableNames):
+
+	def dbTablesDelete(self, tableNames:list):
+		""" 
+		delete tables based on DB connect.
+		 """
 		curConn = self.dbCon.cursor()
 		for tableName in tableNames:
 			try: 
@@ -80,31 +122,52 @@ class databaseOperation():
 				print("Drop table:", tableName, "failly")
 		self.dbCon.commit()
 
-	def addTableComment(self, tableName):
+	def addTableComment(self, tableName:str):
+		""" 
+		add table comment to before.
+		 """
 		comment = input("Pleas input comment for table {}: ".format(str(tableName)))
 		commentAdd = self.sqlExe("""SELECT
-								description
-							FROM
-								pg_description
-							WHERE 
-								pg_description.objoid= (
-									SELECT 
-										oid 
-									FROM 
-										pg_class 
-									WHERE pg_class.relname='{}')
-							""".format(tableName))
+										description
+									FROM
+										pg_description
+									WHERE 
+										pg_description.objoid= (
+											SELECT 
+												oid 
+											FROM 
+												pg_class 
+											WHERE pg_class.relname='{}')
+									""".format(tableName))
 		if commentAdd==[]: comment = comment +";"
 		else: comment = comment+";"+commentAdd
 		print("Comments:", comment)
 		self.sqlExe("COMMENT ON TABLE {} IS '{}'".format(tableName, comment))	
 
-	def sqlExe(self, sql):
+	def sqlExe(self, sql:str):
+		""" 
+		execute sql based on DB connect.
+		 """
 		curConn   = self.dbCon.cursor()
 		curConn.execute(sql)
 		try:
 			data = curConn.fetchall()
-			return data
 		except:
-			pass
+			data = None
 		self.dbCon.commit()
+		return data
+	
+	def dbDataRead(self, tableName:str, cols:list):
+		""" 
+		read data from DB.
+		return data list based cols list.
+		 """
+		data = []
+		for col in cols:
+			sql = "SELECT {} FROM {}".format(col,tableName)
+			data.append(self.sqlExe(sql))
+		return data
+
+if __name__ == "__main__":
+	dbOperation = databaseOperation()
+	print(help(dbOperation))

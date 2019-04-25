@@ -17,6 +17,9 @@ heatDataDict = {91:5, 240:10, 101:15, 250:20, 111:25, 11:30, 121:35, 21:40, 131:
 				15:15, 25:25, 35:35, 45:45, 55:55, 65:65, 75:75, 85:85, 95:95, 0:0}
 
 class DataToPlot():
+	""" 
+	class to plot data based on matplotlib
+	 """
 	def __init__(self, dat=[], xclo="", yclos=[], rows=[], xlabel="", ylable="", title="", labels=[]):
 		""" 
 		dat: data to plot;
@@ -27,7 +30,8 @@ class DataToPlot():
 		title: title for the plot name;
 		labels: every plot line name, should be cloumns;
 		figsize, figdpi: not input, but be setted here;
-		imagePath: path to store the image.
+		imagePath: path to store the image;
+		dbOperation: DB operater, connection for data importing.
 		 """
 		self.dat = dat
 		if xclo==[]: 
@@ -49,8 +53,12 @@ class DataToPlot():
 		self.figsize = [6.4*2, 4.8*2]
 		self.figdpi = 500
 		self.imagePath = "./document/image/"
+		self.dbOperation = databaseOperation()
+
 	def plot(self):
-		""" plot based on dataDict, motoDataDict, heatDataDict """
+		""" 
+		plot based on dataDict, motoDataDict, heatDataDict
+		 """
 		path = self.imagePath + self.title +datetime.now().strftime('%Y%m%d_%H%M%S')
 		if not pathExists(path): pathMkdir(path)	
 		plt.figure(figsize=self.figsize)
@@ -65,8 +73,13 @@ class DataToPlot():
 			plt.plot(xDat, yDat, label=yclo)
 		plt.legend()
 		plt.savefig(path+'/'+self.title, dpi=self.figdpi)
-	def dataReadFromTable(self, tablename, dbType="postgre"):
-		self.dat = dbDataRead(tablename, list(dataDict.keys()), dbType)
+
+	def dataReadFromTable(self, tablename):
+		""" 
+		read all data from tablename by cols.
+		 """
+		self.dat = self.dbOperation.dbDataRead(tablename, list(dataDict))
+
 	def dataPlotFromTables(self, tablenames=[], dbType="postgre"):
 		""" 
 		plot date from table names and plot to a picture
@@ -166,6 +179,7 @@ class DataToPlot():
 
 if __name__ == "__main__":
 	datToPlot = DataToPlot(xclo="id")
+	datToPlot.dbOperation.databaseOpen()
 	datToPlot.title = "linearity of filter"
 	datToPlot.yclos = ["motoCur"]
 	datToPlot.xlabel = "work time /100ms"
@@ -182,4 +196,5 @@ if __name__ == "__main__":
 					"t_motol10_water_1600ml_2019_03_25_14_02_31", 	\
 					"t_motol10_water_1750ml_2019_03_25_14_04_11"]
 	datToPlot.datFliterProcess(tableNames)
+	datToPlot.dbOperation.databaseClose()
 	pass
