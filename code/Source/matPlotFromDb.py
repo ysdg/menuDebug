@@ -157,44 +157,45 @@ class DataToPlot():
 		return np.mean(datasTmp)
 	def datFliterProcess(self, tablenames):
 		self.rows = [100, 150]
-		xDats,yDats,xTmpTop,yTmpTop,xTmpValley,yTmpValley,xTmpMean,yTmpMean=[],[],[],[],[],[],[],[]
+		# xDats,yDats,xTmpTop,yTmpTop,xTmpValley,yTmpValley,xTmpMean,yTmpMean=[],[],[],[],[],[],[],[]
+		xDats, yDats, xTmpValley, yTmpValley = [], [], [], []
 		for tablename in tablenames:
 			self.dataReadFromTable(tablename)
 			dataCur = self.dat[dataDict["motoCur"]][self.rows[0]:self.rows[1]]
-			yTmpTop.append(self.meanFilter(self.topFilter(dataCur)))
-			xTmpTop.append(int(tablename.split("_")[3][:-2]))
-			yTmpValley.append(self.meanFilter(self.outValleyFilter(dataCur)))
-			xTmpValley.append(int(tablename.split("_")[3][:-2]))
-			yTmpMean.append(self.meanFilter(dataCur))
-			xTmpMean.append(int(tablename.split("_")[3][:-2]))
-		self.labels = []
-		self.labels.append("no fileter mean"), xDats.append(xTmpMean), yDats.append(yTmpMean)
-		self.labels.append("top fileter mean"), xDats.append(xTmpTop), yDats.append(yTmpTop)
-		self.labels.append("out Valley fileter mean"), xDats.append(xTmpValley), yDats.append(yTmpValley)
-		self.xlabel = "water level/ml"
+			dataId = self.dat[dataDict["id"]][self.rows[0]:self.rows[1]]
+			# yTmpTop.append(self.meanFilter(self.topFilter(dataCur)))
+			# xTmpTop.append(self.meanFilter(self.topFilter(dataId)))
+			# yTmpValley.append(self.meanFilter(self.outValleyFilter(dataCur)))
+			# xTmpValley.append(self.meanFilter(self.outValleyFilter(dataId)))
+			yTmpValley, xTmpValley = self.outValleyFilter(dataCur, dataId)
+			xDats.append(xTmpValley), yDats.append(yTmpValley)
+			names = ["water", "soft juice", "hard juice", "nuts"]
+			self.labels.append(names[len(xDats)-1]+':{:.2f}'.format(self.meanFilter(yTmpValley)))
+
+			# xTmpValley.append(int(tablename.split("_")[3][:-2]))
+			# yTmpMean.append(self.meanFilter(dataCur))
+			# xTmpMean.append(int(tablename.split("_")[3][:-2]))
+		# self.labels.append("no fileter mean"), xDats.append(xTmpMean), yDats.append(yTmpMean)
+		# self.labels.append("top fileter mean"), xDats.append(xTmpTop), yDats.append(yTmpTop)
+		# self.labels.append("out Valley fileter mean"), xDats.append(xTmpValley), yDats.append(yTmpValley)
+		# self.labels.append("out Valley fileter mean")
+		self.xlabel = "sorts of matrial/ml"
 		self.ylabel = "moto current AD value"
 		self.plotOnePicture(xDats, yDats)
-		print(xDats, yDats)
+		# print(xDats, yDats)
 
 
 if __name__ == "__main__":
 	datToPlot = DataToPlot(xclo="id")
 	datToPlot.dbOperation.databaseOpen()
-	datToPlot.title = "linearity of filter"
+	datToPlot.title = "moto current in 10s-15s based on outValleyFilter"
 	datToPlot.yclos = ["motoCur"]
 	datToPlot.xlabel = "work time /100ms"
 	datToPlot.ylabel = "moto current AD value"
 	tableNames = [	"t_motol10_water_700ml_2019_03_25_13_47_51",	\
-					"t_motol10_water_800ml_2019_03_25_13_49_51", 	\
-					"t_motol10_water_900ml_2019_03_25_13_51_21", 	\
 					"t_motol10_water_1000ml_2019_03_25_13_52_55", 	\
-					"t_motol10_water_1100ml_2019_03_25_13_54_34", 	\
-					"t_motol10_water_1200ml_2019_03_25_13_56_07", 	\
 					"t_motol10_water_1300ml_2019_03_25_13_57_31", 	\
-					"t_motol10_water_1400ml_2019_03_25_13_59_29", 	\
-					"t_motol10_water_1500ml_2019_03_25_14_01_01", 	\
-					"t_motol10_water_1600ml_2019_03_25_14_02_31", 	\
-					"t_motol10_water_1750ml_2019_03_25_14_04_11"]
+					"t_motol10_water_1600ml_2019_03_25_14_02_31"]
 	datToPlot.datFliterProcess(tableNames)
 	datToPlot.dbOperation.databaseClose()
 	pass
