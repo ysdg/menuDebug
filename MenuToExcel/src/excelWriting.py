@@ -54,7 +54,7 @@ class excelWrite(openpyxl.Workbook):
 		recode from line dat to writing row dat;
 		no remain time.
 		 """
-		step = self.curSheetRow-1
+		step = self.curSheetRow-2
 		if  dat[1].find("Temp")!=-1 or \
 			dat[1].find("TEMP")!=-1 or \
 			dat[1].find("temp")!=-1:
@@ -99,6 +99,19 @@ class excelWrite(openpyxl.Workbook):
 			self.curSheetRow = self.curSheetRow+1
 			return 
 		if self.curSheetRow==1:
+			self.curSheet.row_dimensions[1].height = 30
+			self.curSheet['A1'] = '菜单'
+			self.curSheet['B1'] = self.curSheet.title
+			self.curSheet['C1'] = "适用机型"
+			self.curSheet['D1'] = machineName
+			self.curSheet.cell(self.curSheetRow, column=1).font = openpyxl.styles.Font('微软雅黑', 12, True)
+			self.curSheet.cell(self.curSheetRow, column=2).font = openpyxl.styles.Font('微软雅黑', 12, True)
+			self.curSheet.cell(self.curSheetRow, column=3).font = openpyxl.styles.Font('微软雅黑', 12, True)
+			self.curSheet.cell(self.curSheetRow, column=4).font = openpyxl.styles.Font('微软雅黑', 12, True)
+			self.rowAlignSet()
+			self.curSheetRow = self.curSheetRow+1
+			return
+		if self.curSheetRow==2:
 			self.curSheet.append(self.excelColName)
 			self.rowAlignSet()
 			self.curSheetRow = self.curSheetRow+1
