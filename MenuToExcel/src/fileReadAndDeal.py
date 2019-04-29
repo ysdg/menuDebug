@@ -3,13 +3,13 @@
 import sys
 import os
 from filePreDeal import *
-from dataTransfer import *
 from excelWriting import *
 from re import split as reSplit
 
 class fileDeal():
-	def __init__(self, filename):
+	def __init__(self, filename, menuNameDict={}):
 		self.encoding = 'UTF-8'
+		self.menuNameDict = menuNameDict
 		self.fopen = open(filename, 'r', encoding=self.encoding)
 	
 	def dealLineDat(self, linedata:str):
@@ -22,7 +22,7 @@ class fileDeal():
 		"""
 		if linedata.isspace(): return -1
 		else:
-			for menuName in list(menuNameDict):
+			for menuName in list(self.menuNameDict):
 				if linedata.find(menuName)!=-1:
 					return menuName
 
@@ -41,11 +41,28 @@ class fileDeal():
 				excelWb.createNewSheet(lineDataDealed)
 			elif type(lineDataDealed) is int:
 				print("something wrong!")
+	def dataTransferReading(self):
+		startReadMenuName = 0
+		menuNameDict = {}
+		for lineData in self.fopen.readlines():
+			lineData = ''.join(lineData.split())
+			if lineData.find('machineName')!=-1:
+				machineName = lineData[lineData.find("=")+1:]
+			if lineData.find('menuNameDict')!=-1:
+				startReadMenuName = 1
+			if startReadMenuName==1:
+				s = (lineData.strip(',')).split(":")
+				if len(s) > 1: 
+					menuNameDict[s[0]]=s[1]
+		return machineName, menuNameDict
 
 def main():
 	# os.chdir('.\\'+'src')
-	fileDealing = fileDeal(filePreDeal()[0])
-	excelWritingWb =excelWrite()
+	dataTransferFile = fileDeal(filePreDeal(["dataTransfer.txt"])[0])
+	machineName, menuNameDict = dataTransferFile.dataTransferReading()
+
+	fileDealing = fileDeal(filePreDeal()[0], menuNameDict)
+	excelWritingWb =excelWrite(machineName, menuNameDict)
 	fileDealing.fileToExcel(excelWritingWb)
 	excelWritingWb.saveExcel()
 

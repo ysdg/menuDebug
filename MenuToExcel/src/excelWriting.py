@@ -13,11 +13,13 @@ class excelWrite(openpyxl.Workbook):
 		sheetIndex: default sheet index, will add for adding new sheet;
 		excelRelativePath: relative path to store excel.
 	 """
-	def __init__(self):
+	def __init__(self, machineName, menuNameDict):
 		super(excelWrite, self).__init__()
 		print("open excel work book successfully.")
+		self.machineName = machineName
+		self.menuNameDict = menuNameDict
 		self.excelColName = ['步骤', '功能', '步骤时间', '倒计时', '备注']
-		self.excelName = machineName+"菜单流程"+datetime.now().strftime('%Y%m%d_%H%M%S')+".xlsx"
+		self.excelName = self.machineName+"菜单流程"+datetime.now().strftime('%Y%m%d_%H%M%S')+".xlsx"
 		self.align = openpyxl.styles.Alignment(horizontal='right',vertical='center',wrap_text=True)
 		self.sheetIndex = 0
 		self.excelRelativePath = "../"
@@ -32,9 +34,9 @@ class excelWrite(openpyxl.Workbook):
 		create new sheet and reset curSheetRow to 1.
 		 """
 		self.remainTimeProcess()
-		self.curSheet = self.create_sheet(menuNameDict[nameKey])
+		self.curSheet = self.create_sheet(self.menuNameDict[nameKey])
 		self.curSheetRow = 1
-		print("Create sheet: "+menuNameDict[nameKey]+", successfully.")
+		print("Create sheet: "+self.menuNameDict[nameKey]+", successfully.")
 		if self.sheetnames[0]=="Sheet": self.remove(self["Sheet"])
 	def rowAlignSet(self):
 		""" 
@@ -122,7 +124,7 @@ class excelWrite(openpyxl.Workbook):
 			self.curSheet['A1'] = '菜单'
 			self.curSheet['B1'] = self.curSheet.title
 			self.curSheet['C1'] = "适用机型"
-			self.curSheet['D1'] = machineName
+			self.curSheet['D1'] = self.machineName
 			self.curSheet.cell(self.curSheetRow, column=1).font = openpyxl.styles.Font('微软雅黑', 12, True)
 			self.curSheet.cell(self.curSheetRow, column=2).font = openpyxl.styles.Font('微软雅黑', 12, True)
 			self.curSheet.cell(self.curSheetRow, column=3).font = openpyxl.styles.Font('微软雅黑', 12, True)
