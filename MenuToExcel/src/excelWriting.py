@@ -5,6 +5,14 @@ from dataTransfer import *
 from datetime import datetime
 
 class excelWrite(openpyxl.Workbook):
+	""" 
+	excel writing operation based on openpyxl.Workbook:
+		excelColName: default excel column name;
+		excelName: name to store, including machine code and datatime;
+		align: default alignment, right for horizontal, center for vertical;
+		sheetIndex: default sheet index, will add for adding new sheet;
+		excelRelativePath: relative path to store excel.
+	 """
 	def __init__(self):
 		super(excelWrite, self).__init__()
 		print("open excel work book successfully.")
@@ -14,16 +22,23 @@ class excelWrite(openpyxl.Workbook):
 		self.sheetIndex = 0
 		self.excelRelativePath = "../"
 	def saveExcel(self):
+		""" 
+		save excel with excelName.
+		 """
 		self.save(self.excelName)
 		print("save excel: "+self.excelName+", successfully.")
-	def rowData(self, step, ctrlMess, stepTime, remainTime, endCondition):
-		dat = [step, ctrlMess, stepTime, remainTime, endCondition]
 	def createNewSheet(self, nameKey):
+		""" 
+		create new sheet and reset curSheetRow to 1.
+		 """
 		self.curSheet = self.create_sheet(menuNameDict[nameKey])
 		self.curSheetRow = 1
 		print("Create sheet: "+menuNameDict[nameKey]+", successfully.")
 		if self.sheetnames[0]=="Sheet": self.remove(self["Sheet"])
 	def rowAlignSet(self):
+		""" 
+		set row alignment.
+		 """
 		self.curSheet['A'+str(self.curSheetRow)].alignment = self.align
 		self.curSheet['B'+str(self.curSheetRow)].alignment = self.align
 		self.curSheet['C'+str(self.curSheetRow)].alignment = self.align
@@ -35,6 +50,10 @@ class excelWrite(openpyxl.Workbook):
 		self.curSheet.column_dimensions['D'].width = 15
 		self.curSheet.column_dimensions['E'].width = 30
 	def dataRecode(self, dat):
+		""" 
+		recode from line dat to writing row dat;
+		no remain time.
+		 """
 		step = self.curSheetRow-1
 		if  dat[1].find("Temp")!=-1 or \
 			dat[1].find("TEMP")!=-1 or \
@@ -72,8 +91,10 @@ class excelWrite(openpyxl.Workbook):
 		remainTime = "0:00:00"
 		endCondition = '以'+workHeadDictL[dat[1]]
 		return [step, ctrlMess, stepTime, remainTime, endCondition]
-
 	def writeRowData(self, dat):
+		""" 
+		write row data to excel after recoding.
+		 """
 		if  dat == ['0', '0', '0', '0', '0'] or dat==[]: 
 			self.curSheetRow = self.curSheetRow+1
 			return 
