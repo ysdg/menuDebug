@@ -31,6 +31,7 @@ class excelWrite(openpyxl.Workbook):
 		""" 
 		create new sheet and reset curSheetRow to 1.
 		 """
+		self.remainTimeProcess()
 		self.curSheet = self.create_sheet(menuNameDict[nameKey])
 		self.curSheetRow = 1
 		print("Create sheet: "+menuNameDict[nameKey]+", successfully.")
@@ -84,13 +85,31 @@ class excelWrite(openpyxl.Workbook):
 				ctrlMess = workHeadDictH[dat[0]]+'上'+dat[-2]+'到'+dat[-1]+'步'
 			else: ctrlMess = workHeadDictH[dat[0]]
 
-		if int(dat[3]) > 60: 
+		if int(dat[3]) >= 60: 
 			stepTime = '1:'+str(int(dat[3])-60).zfill(2)+':'+str(int(dat[4])).zfill(2)
 		else: 
 			stepTime = '0:'+str(int(dat[3])).zfill(2)+':'+str(int(dat[4])).zfill(2)
 		remainTime = "0:00:00"
 		endCondition = '以'+workHeadDictL[dat[1]]
 		return [step, ctrlMess, stepTime, remainTime, endCondition]
+	def remainTimeProcess(self):
+		timeFormat = "%H:%M:%S"
+		baseTime = datetime.strptime("0:00:00", timeFormat)
+		try: 
+			rowMax = self.curSheetRow-2
+			row = self.curSheetRow-2
+		except: return 
+		while row > 2:
+			if rowMax==row:
+				remainTimeStr = self.curSheet.cell(row = row, column=3).value
+				remainTime = datetime.strptime(remainTimeStr, timeFormat)
+			else:
+				remainTimeStr = self.curSheet.cell(row = row, column=3).value
+				remainTime = datetime.strptime(remainTimeStr, timeFormat)
+				remainTimeStr = self.curSheet.cell(row = row+1, column=4).value
+				remainTime = remainTime + (datetime.strptime(remainTimeStr, timeFormat)-baseTime)
+			self.curSheet.cell(row=row, column=4, value=remainTime.strftime(timeFormat))
+			row = row-1
 	def writeRowData(self, dat):
 		""" 
 		write row data to excel after recoding.
@@ -109,13 +128,10 @@ class excelWrite(openpyxl.Workbook):
 			self.curSheet.cell(self.curSheetRow, column=3).font = openpyxl.styles.Font('微软雅黑', 12, True)
 			self.curSheet.cell(self.curSheetRow, column=4).font = openpyxl.styles.Font('微软雅黑', 12, True)
 			self.rowAlignSet()
-			self.curSheetRow = self.curSheetRow+1
-			return
-		if self.curSheetRow==2:
+			self.curSheetRow = 2
 			self.curSheet.append(self.excelColName)
 			self.rowAlignSet()
 			self.curSheetRow = self.curSheetRow+1
-			return
 		self.curSheet.append(self.dataRecode(dat))
 		self.curSheet.cell(self.curSheetRow, column=3).number_format = openpyxl.styles.numbers.FORMAT_DATE_TIME6
 		self.curSheet.cell(self.curSheetRow, column=4).number_format = openpyxl.styles.numbers.FORMAT_DATE_TIME6
