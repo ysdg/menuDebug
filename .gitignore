@@ -13,3 +13,6 @@ serialPortDataProcess.spec
 dist/
 build/
 /code/document
+*.xlsx
+*.spec
+/src/*.spec

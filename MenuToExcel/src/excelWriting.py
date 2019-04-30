@@ -22,7 +22,7 @@ class excelWrite(openpyxl.Workbook):
 		self.excelName = self.machineName+"菜单流程"+datetime.now().strftime('%Y%m%d_%H%M%S')+".xlsx"
 		self.align = openpyxl.styles.Alignment(horizontal='right',vertical='center',wrap_text=True)
 		self.sheetIndex = 0
-		self.excelRelativePath = "../"
+		self.excelRelativePath = "./"
 	def saveExcel(self):
 		""" 
 		save excel with excelName.
