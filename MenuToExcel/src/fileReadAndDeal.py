@@ -79,12 +79,11 @@ def main():
 	excelWritingWb =excelWrite(machineName, menuNameDict)
 	fileDealing.fileToExcel(excelWritingWb)
 	excelWritingWb.saveExcel()
-
-		
-	# lineData = "{OB_Motor|End_Time,TIME_x_M_y_S(0,10),MOTOR_MODE,L1},"
-	
 	fileDealing.fopen.close()
 	input("successfully, input any key to end!")
+	del dataTransferFile, fileDealing
+	os.remove("tmpdataTransfer.txt")
+	os.remove("tmpMENU.C")
 
 if __name__ == "__main__":
 	main()
