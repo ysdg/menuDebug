@@ -3,6 +3,7 @@
 import openpyxl
 from dataTransfer import *
 from datetime import datetime
+from re import findall as reFindall
 
 class excelWrite(openpyxl.Workbook):
 	""" 
@@ -58,6 +59,11 @@ class excelWrite(openpyxl.Workbook):
 		no remain time.
 		 """
 		step = self.curSheetRow-2
+		if 	dat[-1] != 'DISP_UPDATE' and \
+			dat[-1].find('Temp') != -1 and \
+			dat[-1].find('TEMP') != -1 and \
+			dat[-1].find('temp') != -1: 
+				dat[-1] = reFindall(r"\d+\.?\d*", dat[-1])[0]
 		if  dat[1].find("Temp")!=-1 or \
 			dat[1].find("TEMP")!=-1 or \
 			dat[1].find("temp")!=-1:
@@ -93,6 +99,7 @@ class excelWrite(openpyxl.Workbook):
 			stepTime = '0:'+str(int(dat[3])).zfill(2)+':'+str(int(dat[4])).zfill(2)
 		remainTime = "0:00:00"
 		endCondition = '以'+workHeadDictL[dat[1]]
+		if dat[-1]=='DISP_UPDATE': endCondition = endCondition+"(更新时间)"
 		return [step, ctrlMess, stepTime, remainTime, endCondition]
 	def remainTimeProcess(self):
 		""" 
