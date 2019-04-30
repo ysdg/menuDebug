@@ -95,6 +95,9 @@ class excelWrite(openpyxl.Workbook):
 		endCondition = '以'+workHeadDictL[dat[1]]
 		return [step, ctrlMess, stepTime, remainTime, endCondition]
 	def remainTimeProcess(self):
+		""" 
+		count and writing remain time of process.
+		 """
 		timeFormat = "%H:%M:%S"
 		baseTime = datetime.strptime("0:00:00", timeFormat)
 		try: 

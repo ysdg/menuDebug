@@ -7,6 +7,13 @@ from excelWriting import *
 from re import split as reSplit
 
 class fileDeal():
+	""" 
+	deal with file to transfer to excel.
+		filename: filename with path, which shoudle be predealed;
+		menuNameDict: menu name dictionary, which for writing excel data;
+		encoding: UTF-8 by default;
+		fopen: cursor of file reading;
+	 """
 	def __init__(self, filename, menuNameDict={}):
 		self.encoding = 'UTF-8'
 		self.menuNameDict = menuNameDict
@@ -31,6 +38,9 @@ class fileDeal():
 			if '' in strList: strList.remove('')
 			return strList
 	def fileToExcel(self, excelWb: excelWrite):
+		""" 
+		transfer file, which out of comment, to excel.
+		 """
 		for lineData in self.fopen.readlines():
 			lineData = ''.join(lineData.split())
 			lineDataDealed =  self.dealLineDat(lineData)
@@ -42,6 +52,9 @@ class fileDeal():
 			elif type(lineDataDealed) is int:
 				print("something wrong!")
 	def dataTransferReading(self):
+		""" 
+		read transfer menu name and machine data, which is for writing excel.
+		 """
 		startReadMenuName = 0
 		menuNameDict = {}
 		for lineData in self.fopen.readlines():
