@@ -80,10 +80,10 @@ def main():
 	fileDealing.fileToExcel(excelWritingWb)
 	excelWritingWb.saveExcel()
 	fileDealing.fopen.close()
-	input("successfully, input any key to end!")
 	del dataTransferFile, fileDealing
 	os.remove("tmpdataTransfer.txt")
 	os.remove("tmpMENU.C")
+	input("successfully, input any key to end!")
 
 if __name__ == "__main__":
 	main()
