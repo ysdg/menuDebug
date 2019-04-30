@@ -51,6 +51,7 @@ class fileDeal():
 				excelWb.createNewSheet(lineDataDealed)
 			elif type(lineDataDealed) is int:
 				print("something wrong!")
+		excelWb.remainTimeProcess()
 	def dataTransferReading(self):
 		""" 
 		read transfer menu name and machine data, which is for writing excel.
