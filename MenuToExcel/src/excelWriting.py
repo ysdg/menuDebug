@@ -22,6 +22,8 @@ class excelWrite(openpyxl.Workbook):
 		self.excelColName = ['步骤', '功能', '步骤时间', '倒计时', '备注']
 		self.excelName = self.machineName+"菜单流程"+datetime.now().strftime('%Y%m%d_%H%M%S')+".xlsx"
 		self.align = openpyxl.styles.Alignment(horizontal='right',vertical='center',wrap_text=True)
+		borderSide = openpyxl.styles.Side(color="FF000000", style="thin")
+		self.border = openpyxl.styles.Border(left=borderSide, right=borderSide, top=borderSide, bottom=borderSide)
 		self.sheetIndex = 0
 		self.excelRelativePath = "./"
 	def saveExcel(self):
@@ -43,11 +45,16 @@ class excelWrite(openpyxl.Workbook):
 		""" 
 		set row alignment.
 		 """
-		self.curSheet['A'+str(self.curSheetRow)].alignment = self.align
-		self.curSheet['B'+str(self.curSheetRow)].alignment = self.align
-		self.curSheet['C'+str(self.curSheetRow)].alignment = self.align
-		self.curSheet['D'+str(self.curSheetRow)].alignment = self.align
-		self.curSheet['E'+str(self.curSheetRow)].alignment = self.align
+		self.curSheet['A'+str(self.curSheetRow)].alignment 	= self.align
+		self.curSheet['B'+str(self.curSheetRow)].alignment 	= self.align
+		self.curSheet['C'+str(self.curSheetRow)].alignment 	= self.align
+		self.curSheet['D'+str(self.curSheetRow)].alignment 	= self.align
+		self.curSheet['E'+str(self.curSheetRow)].alignment 	= self.align
+		self.curSheet['A'+str(self.curSheetRow)].border 	= self.border
+		self.curSheet['B'+str(self.curSheetRow)].border 	= self.border
+		self.curSheet['C'+str(self.curSheetRow)].border 	= self.border
+		self.curSheet['D'+str(self.curSheetRow)].border 	= self.border
+		self.curSheet['E'+str(self.curSheetRow)].border 	= self.border
 		self.curSheet.column_dimensions['A'].width = 10
 		self.curSheet.column_dimensions['B'].width = 30
 		self.curSheet.column_dimensions['C'].width = 15
