@@ -71,6 +71,3 @@ heatRankDict = {
 	"HEAT_L0_9_5" : "9.5",
 
 }
-motoRankDict = {
-
-}

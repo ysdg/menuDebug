@@ -1,7 +1,10 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
 import openpyxl
-from dataTransfer import *
+try:
+	from .dataTransfer import *
+except:
+	from dataTransfer import *
 from datetime import datetime
 from re import findall as reFindall
 

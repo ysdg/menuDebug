@@ -2,8 +2,12 @@
 # -*- coding: utf-8 -*-
 import sys
 import os
-from filePreDeal import *
-from excelWriting import *
+try:
+	from .filePreDeal import filePreDeal
+	from .excelWriting import excelWrite
+except:
+	from filePreDeal import filePreDeal
+	from excelWriting import excelWrite
 from re import split as reSplit
 
 class fileDeal():
