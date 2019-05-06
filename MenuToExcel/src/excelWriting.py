@@ -66,9 +66,8 @@ class excelWrite(openpyxl.Workbook):
 		no remain time.
 		 """
 		step = self.curSheetRow-2
-		if 	dat[-1] != 'DISP_UPDATE' and \
-			dat[-1].find('Temp') != -1 and \
-			dat[-1].find('TEMP') != -1 and \
+		if 	dat[-1].find('Temp') != -1 or \
+			dat[-1].find('TEMP') != -1 or \
 			dat[-1].find('temp') != -1: 
 				dat[-1] = reFindall(r"\d+\.?\d*", dat[-1])[0]
 		if  dat[1].find("Temp")!=-1 or \
