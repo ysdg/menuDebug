@@ -156,19 +156,18 @@ class DataToPlot():
 		datasTmp.remove(minDat)
 		return np.mean(datasTmp)
 	def datFliterProcess(self, tablenames):
-		self.rows = [1, 150]
+		self.rows = [100, 150]
 		# xDats,yDats,xTmpTop,yTmpTop,xTmpValley,yTmpValley,xTmpMean,yTmpMean=[],[],[],[],[],[],[],[]
-		xDats, yDats, xTmpValley, yTmpValley = [], [], [], []
 		for tablename in tablenames:
 			self.dataReadFromTable(tablename)
 			dataCur = self.dat[dataDict["motoCur"]][self.rows[0]:self.rows[1]]
-			dataId = self.dat[dataDict["id"]][self.rows[0]:self.rows[1]]
+			print(self.meanFilter(dataCur))
 			# yTmpTop.append(self.meanFilter(self.topFilter(dataCur)))
 			# xTmpTop.append(self.meanFilter(self.topFilter(dataId)))
 			# yTmpValley.append(self.meanFilter(self.outValleyFilter(dataCur)))
 			# xTmpValley.append(self.meanFilter(self.outValleyFilter(dataId)))
-			yTmpValley, xTmpValley = self.outValleyFilter(dataCur, dataId)
-			xDats.append(xTmpValley), yDats.append(yTmpValley)
+			# yTmpValley, xTmpValley = self.outValleyFilter(dataCur, dataId)
+			# xDats.append(xTmpValley), yDats.append(yTmpValley)
 			# xTmpValley.append(int(tablename.split("_")[3][:-2]))
 			# yTmpMean.append(self.meanFilter(dataCur))
 			# xTmpMean.append(int(tablename.split("_")[3][:-2]))
@@ -176,7 +175,7 @@ class DataToPlot():
 		# self.labels.append("top fileter mean"), xDats.append(xTmpTop), yDats.append(yTmpTop)
 		# self.labels.append("out Valley fileter mean"), xDats.append(xTmpValley), yDats.append(yTmpValley)
 		# self.labels.append("out Valley fileter mean")
-		self.plotOnePicture(xDats, yDats)
+		# self.plotOnePicture(xDats, yDats)
 		# print(xDats, yDats)
 
 
@@ -189,12 +188,21 @@ if __name__ == "__main__":
 	datToPlot.ylabel = "moto current AD value"
 	datToPlot.labels = ["water-motoL5", "juice-motoL5", "nut-motoL5", \
 						"water-motoL10", "juice-motoL10", "nut-motoL10"]
-	tableNames = [	"t_motol10_water_700ml_2019_03_25_13_47_51",	\
-					"t_motol10_water_900ml_2019_03_25_13_51_21",	\
-					"t_motol10_water_1100ml_2019_03_25_13_54_34", 	\
-					"t_motol10_water_1300ml_2019_03_25_13_57_31", 	\
-					"t_motol10_water_1500ml_2019_03_25_14_01_01", 	\
-					"t_motol10_water_1750ml_2019_03_25_14_04_11"]
+	tableNames = [	"t_motol10_198_water_700ml_2019_03_25_14_28_20",	\
+					"t_motol10_198_water_1000ml_2019_03_25_14_26_52", 	\
+					"t_motol10_198_water_1400ml_2019_03_25_14_25_20", 	\
+					"t_motol10_198_water_1750ml_2019_03_25_14_23_47", 	\
+
+					"t_motol10_242_water_700ml_2019_03_25_14_16_52", 	\
+					"t_motol10_242_water_1000ml_2019_03_25_14_18_32", 	\
+					"t_motol10_242_water_1400ml_2019_03_25_14_20_45", 	\
+					"t_motol10_242_water_1750ml_2019_03_25_14_22_22", 	\
+
+					"t_motol10_water_700ml_2019_03_25_13_47_51", 	\
+					"t_motol10_water_1000ml_2019_03_25_13_52_55", 	\
+					"t_motol10_water_1400ml_2019_03_25_13_59_29", 	\
+					"t_motol10_water_1750ml_2019_03_25_14_04_11", 	\
+																]
 	datToPlot.datFliterProcess(tableNames)
 	datToPlot.dbOperation.databaseClose()
 	pass

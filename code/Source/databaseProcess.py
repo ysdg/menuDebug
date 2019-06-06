@@ -79,9 +79,9 @@ class databaseOperation():
 		if self.menuMsg=="input":
 			tablename = input("Please input menu:")
 			tablename = tablename + "_" + input("Please materials(g):") + "g"
-			tablename = tablename + "_" + input("Please water level(ml):") + "ml"
+			tablename = tablename + "_" + input("Please water level(ml):") + "ml" +'_'
 		else:
-			tablename = "soyMilk"+'_'+'140'+'g'+'_'+'1400'+'ml'
+			tablename = "soyMilk"+'_'+'140'+'g'+'_'+'1400'+'ml'+'_'
 		return tablename+datetime.now().strftime('%Y%m%d_%H%M%S')
 
 	def dbTableCreate(self):
@@ -170,4 +170,8 @@ class databaseOperation():
 
 if __name__ == "__main__":
 	dbOperation = databaseOperation()
-	print(help(dbOperation))
+	dbOperation.databaseOpen()
+	tableNames = [	't_juice_350g_875ml_2019_03_20_18_45_41']
+	for tableName in tableNames:
+		dbOperation.addTableComment(tableName)
+	dbOperation.databaseClose()

@@ -9,7 +9,7 @@ class serialProcess(serialSerial):
 	based on serialSerial;
 	the class is for serial data process.
 	 """
-	def __init__(self, serPort="COM6", serPortBold=9600):
+	def __init__(self, serPort="COM5", serPortBold=9600):
 		""" 
 		serPort, serPortBold: for serialSerial
 		others: my own definetion
@@ -70,5 +70,5 @@ def main():
 	ser.close()
 
 if __name__=='__main__':
-	# main()
-	print(help(serialProcess))
+	main()
+	# print(help(serialProcess))
