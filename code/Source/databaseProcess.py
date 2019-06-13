@@ -171,7 +171,15 @@ class databaseOperation():
 if __name__ == "__main__":
 	dbOperation = databaseOperation()
 	dbOperation.databaseOpen()
-	tableNames = [	't_juice_350g_875ml_2019_03_20_18_45_41']
-	for tableName in tableNames:
-		dbOperation.addTableComment(tableName)
+	sql = """	SELECT 
+					tabname
+				FROM
+					(select relname as tabname,
+					cast(obj_description(relfilenode,'pg_class') as varchar) as comment from pg_class c 
+					where  relkind = 'r' and relname not like 'pg_%' and relname not like 'sql_%' order by comment) AS C
+				WHERE
+					comment LIKE '%1#%'
+			"""
+	print(dbOperation.sqlExe(sql))
+
 	dbOperation.databaseClose()
