@@ -1,0 +1,15 @@
+machineName = L18-Y930
+menuNameDict = {
+	MENU_NONG_JIANG_CB			: 浓浆,
+	MENU_NONG_TANG_CB			: 浓汤,
+	MENU_HUA_GUO_CHA_CB			: 花果茶,
+	MENU_ZI_BU_HU_CB			: 滋补糊,
+	MENU_YANG_SHEN_ZHOU_CB		: 养生粥,
+	MENU_JIANG_LIAO_CB			: 酱料,
+	MENU_XI_YANG_SHEN_FENG_CB	: 西洋参粉,
+	MENU_GUO_SU_ZHI_CB			: 果蔬汁,
+	MENU_NAI_XI_CB				: 奶昔,
+	MENU_BING_SHA_CB			: 冰沙,
+	MENU_QING_XI_CB				: 清洗,
+}
+

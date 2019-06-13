@@ -1,0 +1,18 @@
+# .gitignore
+data/sqlCode/pgAdmin 4_files/
+data/sqlCode/pgAdmin 4.html
+.vscode/
+menuDebug.code-workspace
+__pycache__/
+putty.exe
+sqlite3/image/
+.stignore
+.stversions/
+serialPortDataProcess.exe
+serialPortDataProcess.spec
+dist/
+build/
+/code/document
+*.xlsx
+*.spec
+/src/*.spec
